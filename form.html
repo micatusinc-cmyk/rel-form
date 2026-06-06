@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReL Group 賃貸サポート 物件探しご依頼フォーム</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --brown: #3a2a1a;
+  --brown2: #5c4033;
+  --brown3: #8b6e5a;
+  --accent: #b8956a;
+  --accent2: #d4b896;
+  --mid: #9a8070;
+  --light: rgba(255,252,248,0.7);
+  --glass: rgba(250,245,238,0.42);
+  --glass2: rgba(255,251,245,0.58);
+  --glass-border: rgba(255,245,230,0.65);
+  --glass-border2: rgba(200,175,145,0.35);
+  --shadow: 0 8px 40px rgba(40,20,5,0.18), inset 0 1px 0 rgba(255,248,235,0.8);
+  --shadow-hover: 0 20px 60px rgba(40,20,5,0.25);
+  --red: #c0533a;
+}
+
+body {
+  font-family: 'Noto Sans JP', sans-serif;
+  min-height: 100vh;
+  color: var(--brown);
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* ── BACKGROUND ── */
+.bg-photo {
+  position: fixed; inset: 0; z-index: 0;
+  background-image: url('https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&q=80&fit=crop');
+  background-size: cover;
+  background-position: center;
+  filter: brightness(0.82) saturate(0.85);
+}
+.bg-overlay {
+  position: fixed; inset: 0; z-index: 1;
+  background: linear-gradient(
+    160deg,
+    rgba(45,28,12,0.38) 0%,
+    rgba(60,38,18,0.28) 40%,
+    rgba(35,22,8,0.35) 100%
+  );
+}
+
+/* ── HEADER ── */
+.app-header {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(38,24,10,0.68);
+  backdrop-filter: blur(28px) saturate(1.5);
+  -webkit-backdrop-filter: blur(28px) saturate(1.5);
+  border-bottom: 1px solid rgba(200,165,110,0.22);
+  padding: 0 36px; height: 62px;
+  display: flex; align-items: center;
+  box-shadow: 0 2px 20px rgba(20,10,0,0.25);
+}
+.logo {
+  font-family: 'Cormorant Garamond', serif;
+  color: rgba(240,225,200,0.95);
+  font-size: 1.3rem; font-weight: 600; letter-spacing: 0.08em;
+}
+.logo span {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-weight: 300; font-size: 0.75rem;
+  color: rgba(210,185,150,0.75);
+  margin-left: 14px; letter-spacing: 0.12em;
+}
+
+/* ── LAYOUT ── */
+.page-wrap { position: relative; z-index: 2; }
+.form-outer { max-width: 780px; margin: 0 auto; padding: 52px 20px 100px; }
+.form-hero { text-align: center; margin-bottom: 44px; }
+.form-hero h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.4rem; font-weight: 600;
+  color: rgba(250,242,228,0.96); line-height: 1.3;
+  text-shadow: 0 2px 20px rgba(20,10,0,0.4);
+  letter-spacing: 0.04em;
+}
+.form-hero p {
+  color: rgba(225,205,175,0.85); font-size: 0.84rem;
+  margin-top: 12px; font-weight: 300; letter-spacing: 0.06em;
+}
+.accent-line {
+  width: 40px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent2), transparent);
+  margin: 16px auto;
+}
+
+/* ── CARD ── */
+.form-card {
+  background: var(--glass);
+  backdrop-filter: blur(32px) saturate(1.6) brightness(1.08);
+  -webkit-backdrop-filter: blur(32px) saturate(1.6) brightness(1.08);
+  border: 1px solid var(--glass-border);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  margin-bottom: 18px;
+  transition: box-shadow 0.3s, transform 0.25s;
+}
+.form-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+
+.section-head {
+  background: rgba(42,26,12,0.52);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 12px 26px;
+  display: flex; align-items: center; gap: 9px;
+  border-bottom: 1px solid rgba(200,165,110,0.18);
+}
+.section-head .icon { font-size: 0.55rem; color: rgba(184,149,106,0.8); letter-spacing: 0; }
+.section-head h2 {
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.18em;
+  color: rgba(225,200,160,0.95); text-transform: uppercase;
+}
+.section-body { padding: 26px; }
+
+/* ── GRID ── */
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.form-row.single { grid-template-columns: 1fr; }
+.form-row.triple { grid-template-columns: 1fr 1fr 1fr; }
+.form-row:last-child { margin-bottom: 0; }
+
+/* ── FIELD ── */
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field label {
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em;
+  color: var(--brown2);
+}
+.field label .req { color: var(--accent); margin-left: 3px; }
+.field label .hint { color: var(--mid); font-weight: 300; font-size: 0.68rem; display: block; margin-top: 1px; }
+
+.field input, .field select, .field textarea {
+  background: rgba(255,250,242,0.52);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(200,170,130,0.45);
+  border-radius: 10px; padding: 10px 13px;
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 0.86rem; color: var(--brown);
+  outline: none; transition: all 0.2s;
+  box-shadow: inset 0 1px 3px rgba(60,30,5,0.06), 0 1px 0 rgba(255,248,235,0.7);
+}
+.field input::placeholder { color: var(--mid); font-weight: 300; }
+.field input:focus, .field select:focus, .field textarea:focus {
+  border-color: var(--accent);
+  background: rgba(255,252,245,0.72);
+  box-shadow: 0 0 0 3px rgba(184,149,106,0.18), inset 0 1px 3px rgba(60,30,5,0.04);
+}
+.field textarea { resize: vertical; min-height: 90px; }
+
+/* ── NUMBER UNIT ── */
+.num-wrap { display: flex; gap: 8px; align-items: center; }
+.num-wrap select { flex: 1; }
+.num-unit { font-size: 0.75rem; color: var(--mid); white-space: nowrap; }
+
+/* ── RADIO / CHECK ── */
+.radio-group, .check-group { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 3px; }
+.radio-group label, .check-group label {
+  display: flex; align-items: center; gap: 5px;
+  padding: 6px 13px;
+  background: rgba(255,248,235,0.38);
+  border: 1px solid rgba(200,170,130,0.4);
+  border-radius: 20px; cursor: pointer;
+  font-size: 0.8rem; color: var(--brown2) !important;
+  font-weight: 400 !important; letter-spacing: 0 !important;
+  transition: all 0.15s;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 1px 0 rgba(255,245,225,0.6);
+}
+.radio-group input, .check-group input { display: none; }
+.radio-group label:has(input:checked), .check-group label:has(input:checked) {
+  border-color: var(--accent);
+  background: rgba(184,149,106,0.18);
+  color: var(--brown) !important;
+}
+.radio-group label:hover, .check-group label:hover {
+  border-color: var(--accent2);
+  background: rgba(255,245,225,0.55);
+}
+
+/* ── STATION ── */
+.station-selector { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 12px; }
+.station-list-wrap {
+  background: rgba(255,248,235,0.38);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(200,170,130,0.4);
+  border-radius: 10px; overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(60,30,5,0.05), 0 1px 0 rgba(255,245,225,0.7);
+}
+.st-cb-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 10px; cursor: pointer;
+  font-size: 0.82rem; color: var(--brown2);
+  transition: background 0.12s; user-select: none;
+}
+.st-cb-item:hover { background: rgba(184,149,106,0.12); }
+.st-cb-item input[type="checkbox"] { display: none; }
+.st-cb-box {
+  width: 17px; height: 17px; flex-shrink: 0;
+  border: 1px solid rgba(140,100,65,0.45); border-radius: 4px;
+  background: rgba(255,248,235,0.65);
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+}
+.st-cb-item.checked .st-cb-box { background: var(--accent); border-color: var(--accent); }
+.st-cb-item.checked .st-cb-box::after { content: '✓'; color: #fff; font-size: 0.65rem; font-weight: 700; }
+.st-cb-item.checked { color: var(--brown); }
+
+.btn-add-st {
+  display: block; width: 100%; margin-top: 10px;
+  background: rgba(140,100,60,0.35);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  color: rgba(240,220,190,0.85); border: 1px solid rgba(200,165,110,0.35);
+  border-radius: 9px; padding: 9px;
+  font-family: 'Noto Sans JP', sans-serif; font-size: 0.8rem;
+  font-weight: 700; letter-spacing: 0.08em; cursor: pointer;
+  transition: all 0.18s; opacity: 0.45;
+}
+.btn-add-st.ready {
+  opacity: 1;
+  background: rgba(184,149,106,0.45);
+  color: var(--brown); border-color: rgba(184,149,106,0.6);
+}
+.btn-add-st.ready:hover { background: rgba(184,149,106,0.62); }
+
+.station-tags-area {
+  min-height: 42px; padding: 10px 12px;
+  background: rgba(255,248,235,0.3);
+  border: 1px solid rgba(200,170,130,0.38);
+  border-radius: 10px;
+  display: flex; flex-wrap: wrap; gap: 6px; align-items: flex-start;
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 3px rgba(60,30,5,0.04), 0 1px 0 rgba(255,245,225,0.65);
+}
+.st-placeholder { color: var(--mid); font-size: 0.78rem; align-self: center; font-weight: 300; }
+.st-tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: rgba(110,72,38,0.55);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(200,165,110,0.35);
+  color: rgba(245,230,205,0.95);
+  padding: 4px 9px 4px 11px; border-radius: 20px;
+  font-size: 0.76rem; font-weight: 500;
+}
+.st-tag .line-label { font-size: 0.66rem; opacity: 0.65; }
+.st-tag button {
+  background: rgba(255,235,200,0.2); border: none;
+  color: rgba(245,225,195,0.9); border-radius: 50%;
+  width: 15px; height: 15px; font-size: 0.58rem;
+  cursor: pointer; display: flex; align-items: center;
+  justify-content: center; padding: 0; flex-shrink: 0;
+  transition: background 0.12s;
+}
+.st-tag button:hover { background: rgba(200,80,50,0.4); }
+
+/* ── SUBMIT ── */
+.submit-wrap { text-align: center; margin-top: 36px; }
+.btn-submit {
+  background: rgba(255,252,245,0.9);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  color: var(--brown2); border: 1px solid rgba(200,170,130,0.5);
+  font-family: 'Noto Sans JP', sans-serif; font-size: 0.93rem;
+  font-weight: 700; letter-spacing: 0.14em;
+  padding: 16px 72px; border-radius: 50px;
+  cursor: pointer; transition: all 0.25s;
+  box-shadow: 0 8px 28px rgba(40,18,4,0.2), inset 0 1px 0 rgba(255,255,255,0.9);
+}
+.btn-submit:hover {
+  background: var(--accent);
+  color: #fff; border-color: var(--accent);
+  box-shadow: 0 12px 36px rgba(40,18,4,0.28);
+  transform: translateY(-1px);
+}
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 32px; left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: rgba(42,26,12,0.88);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(200,165,110,0.3); color: rgba(240,220,185,0.96);
+  padding: 12px 28px; border-radius: 50px;
+  font-size: 0.84rem; font-weight: 500; letter-spacing: 0.05em;
+  transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  z-index: 9999; white-space: nowrap;
+  box-shadow: 0 8px 32px rgba(20,8,0,0.35);
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ── SUCCESS MODAL ── */
+.success-overlay {
+  position: fixed; inset: 0; z-index: 2000;
+  background: rgba(30,16,5,0.7);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  display: none; align-items: center; justify-content: center; padding: 24px;
+}
+.success-overlay.open { display: flex; }
+.success-modal {
+  background: rgba(252,246,236,0.88);
+  backdrop-filter: blur(40px) saturate(1.6); -webkit-backdrop-filter: blur(40px) saturate(1.6);
+  border: 1px solid rgba(220,190,150,0.6);
+  border-radius: 22px; max-width: 460px; width: 100%;
+  padding: 48px 40px 40px;
+  box-shadow: 0 28px 80px rgba(30,15,4,0.38);
+  text-align: center;
+  animation: modalIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes modalIn { from { transform: scale(0.88); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.success-icon {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: rgba(184,149,106,0.15);
+  border: 1.5px solid rgba(184,149,106,0.5);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 20px;
+  font-size: 1.1rem; color: var(--accent); letter-spacing: 0;
+}
+.success-modal h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.6rem; font-weight: 600; color: var(--brown2);
+  letter-spacing: 0.04em; margin-bottom: 12px;
+}
+.success-modal .accent-line { margin: 0 auto 18px; }
+.success-modal p {
+  font-size: 0.84rem; color: var(--brown3); font-weight: 300;
+  line-height: 1.85; letter-spacing: 0.03em;
+}
+.success-modal p strong { font-weight: 700; color: var(--brown2); }
+.btn-success-close {
+  margin-top: 30px;
+  background: rgba(110,72,38,0.82); color: rgba(245,230,205,0.96);
+  border: 1px solid rgba(200,165,110,0.4);
+  font-family: 'Noto Sans JP', sans-serif; font-size: 0.85rem;
+  font-weight: 700; letter-spacing: 0.1em;
+  padding: 13px 40px; border-radius: 50px; cursor: pointer;
+  transition: all 0.22s;
+  box-shadow: 0 6px 20px rgba(40,18,4,0.2);
+}
+.btn-success-close:hover { background: var(--accent); box-shadow: 0 8px 28px rgba(40,18,4,0.28); }
+
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(184,149,106,0.4); border-radius: 2px; }
+
+@media (max-width: 640px) {
+  .form-row, .form-row.triple { grid-template-columns: 1fr; }
+  .station-selector { grid-template-columns: 1fr; }
+  .app-header { padding: 0 18px; }
+  .logo span { display: none; }
+  .form-outer { padding: 36px 16px 80px; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-photo"></div>
+<div class="bg-overlay"></div>
+
+<header class="app-header">
+  <div class="logo">ReL Group <span>賃貸サポート 物件探しご依頼フォーム</span></div>
+</header>
+
+<div class="toast" id="toast"></div>
+
+<!-- 送信完了モーダル -->
+<div class="success-overlay" id="success-overlay">
+  <div class="success-modal">
+    <div class="success-icon">◆</div>
+    <h2>送信が完了しました</h2>
+    <div class="accent-line"></div>
+    <p>
+      この度はReL Groupへ<br>物件探しをご依頼いただき、誠にありがとうございます。<br><br>
+      <strong>担当者より随時ご連絡いたしますので、<br>しばらくお待ちくださいませ。</strong><br><br>
+      ご不明な点がございましたら、<br>お気軽にお問い合わせください。
+    </p>
+    <button class="btn-success-close" onclick="closeSuccessModal()">閉じる</button>
+  </div>
+</div>
+
+<div class="page-wrap">
+<div class="form-outer">
+  <div class="form-hero">
+    <h1>賃貸サポート<br>物件探しご依頼フォーム</h1>
+    <div class="accent-line"></div>
+    <p>ReL Group｜以下の項目をご入力のうえ送信してください。<br>担当者より順次ご連絡いたします。</p>
+  </div>
+
+  <!-- 基本情報 -->
+  <div class="form-card">
+    <div class="section-head"><span class="icon">◆</span><h2>基本情報</h2></div>
+    <div class="section-body">
+      <div class="form-row">
+        <div class="field">
+          <label>お名前 <span class="req">*</span></label>
+          <input type="text" id="f_name" placeholder="山田 太郎">
+        </div>
+        <div class="field">
+          <label>ふりがな <span class="req">*</span></label>
+          <input type="text" id="f_kana" placeholder="やまだ たろう">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="field">
+          <label>電話番号 <span class="req">*</span></label>
+          <input type="tel" id="f_tel" placeholder="090-0000-0000">
+        </div>
+        <div class="field">
+          <label>メールアドレス <span class="req">*</span></label>
+          <input type="email" id="f_email" placeholder="example@mail.com">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="field">
+          <label>入居希望日 <span class="req">*</span></label>
+          <input type="date" id="f_movein">
+        </div>
+        <div class="field">
+          <label>過去の滞納歴 <span class="req">*</span></label>
+          <div class="radio-group">
+            <label><input type="radio" name="arrear" value="なし"> なし</label>
+            <label><input type="radio" name="arrear" value="あり"> あり</label>
+            <label><input type="radio" name="arrear" value="不明"> 不明</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 予算 -->
+  <div class="form-card">
+    <div class="section-head"><span class="icon">◆</span><h2>予算</h2></div>
+    <div class="section-body">
+      <div class="form-row">
+        <div class="field">
+          <label>希望家賃（上限）<span class="req">*</span><span class="hint">5,000円単位</span></label>
+          <div class="num-wrap"><select id="f_rent"></select><span class="num-unit">円／月</span></div>
+        </div>
+        <div class="field">
+          <label>初期費用予算<span class="hint">敷礼あり：家賃の約5倍が相場</span></label>
+          <div class="num-wrap"><select id="f_initial"></select><span class="num-unit">円</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 物件条件 -->
+  <div class="form-card">
+    <div class="section-head"><span class="icon">◆</span><h2>物件条件</h2></div>
+    <div class="section-body">
+      <div class="form-row triple">
+        <div class="field">
+          <label>築年数（上限）</label>
+          <select id="f_age">
+            <option value="">こだわらない</option>
+            <option>新築</option><option>築3年以内</option><option>築5年以内</option>
+            <option>築10年以内</option><option>築15年以内</option><option>築20年以内</option>
+            <option>築25年以内</option><option>築30年以内</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>間取り <span class="req">*</span></label>
+          <select id="f_layout">
+            <option value="">選択してください</option>
+            <option>ワンルーム</option><option>1K</option><option>1DK</option><option>1LDK</option>
+            <option>2K</option><option>2DK</option><option>2LDK</option><option>3LDK以上</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>広さ（下限）</label>
+          <div class="num-wrap"><select id="f_area"></select><span class="num-unit">㎡〜</span></div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="field">
+          <label>駅徒歩（上限）</label>
+          <select id="f_walk">
+            <option value="">こだわらない</option>
+            <option>3分以内</option><option>5分以内</option><option>7分以内</option>
+            <option>10分以内</option><option>15分以内</option><option>20分以内</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>階数</label>
+          <select id="f_floor">
+            <option value="">こだわらない</option>
+            <option>1階</option><option>2階以上</option><option>3階以上</option>
+            <option>5階以上</option><option>10階以上（高層）</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- エリア -->
+  <div class="form-card">
+    <div class="section-head"><span class="icon">◆</span><h2>希望エリア</h2></div>
+    <div class="section-body">
+      <div class="station-selector">
+        <div class="field">
+          <label>都道府県</label>
+          <select id="f_pref" onchange="onPrefChange()">
+            <option value="">選択してください</option>
+            <option>東京都</option><option>神奈川県</option><option>埼玉県</option><option>千葉県</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>路線</label>
+          <select id="f_line" onchange="onLineChange()" disabled>
+            <option value="">都道府県を選択</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>駅（タップで複数選択）</label>
+          <div class="station-list-wrap">
+            <div id="station-checkbox-list" style="max-height:190px;overflow-y:auto;padding:7px 10px;display:flex;flex-direction:column;gap:3px;">
+              <span style="color:var(--mid);font-size:0.78rem;font-weight:300;">路線を選択すると表示されます</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button type="button" class="btn-add-st" id="btn-add-station" onclick="addStations()" disabled>
+        — 選択した駅を追加
+      </button>
+      <div class="field" style="margin-top:14px">
+        <label style="display:flex;align-items:center;justify-content:space-between;">
+          <span>追加した駅 <span class="req">*</span><span class="hint">1駅以上追加してください</span></span>
+          <button type="button" onclick="clearAllStations()"
+            style="background:none;border:1px solid rgba(192,83,58,0.35);color:var(--red);border-radius:6px;padding:3px 10px;font-size:0.7rem;font-family:'Noto Sans JP',sans-serif;cursor:pointer;transition:all 0.15s;"
+            onmouseover="this.style.background='rgba(192,83,58,0.12)'" onmouseout="this.style.background='none'">全てクリア</button>
+        </label>
+        <div class="station-tags-area" id="station-tags">
+          <span class="st-placeholder" id="st-placeholder">まだ駅が追加されていません</span>
+        </div>
+      </div>
+      <div class="field" style="margin-top:18px">
+        <label>職場・よく行くエリア<span class="hint">通勤先・通学先・よく利用する駅など（想定でも可）</span></label>
+        <input type="text" id="f_workplace" placeholder="例）新宿、渋谷駅周辺、品川オフィス など">
+      </div>
+    </div>
+  </div>
+
+  <!-- こだわり条件 -->
+  <div class="form-card">
+    <div class="section-head"><span class="icon">◆</span><h2>こだわり条件</h2></div>
+    <div class="section-body">
+      <div class="field" style="margin-bottom:18px">
+        <label>設備・条件（複数選択可）</label>
+        <div class="check-group" id="amenities-group">
+          <label><input type="checkbox" value="風呂トイレ別"> 風呂トイレ別</label>
+          <label><input type="checkbox" value="独立洗面台"> 独立洗面台</label>
+          <label><input type="checkbox" value="追い焚き機能"> 追い焚き機能</label>
+          <label><input type="checkbox" value="宅配ボックス"> 宅配ボックス</label>
+          <label><input type="checkbox" value="オートロック"> オートロック</label>
+          <label><input type="checkbox" value="管理人常駐"> 管理人常駐</label>
+          <label><input type="checkbox" value="ペット可"> ペット可</label>
+          <label><input type="checkbox" value="楽器相談"> 楽器相談</label>
+          <label><input type="checkbox" value="駐車場あり"> 駐車場あり</label>
+          <label><input type="checkbox" value="駐輪場あり"> 駐輪場あり</label>
+          <label><input type="checkbox" value="バルコニー"> バルコニー</label>
+          <label><input type="checkbox" value="南向き"> 南向き</label>
+          <label><input type="checkbox" value="角部屋"> 角部屋</label>
+          <label><input type="checkbox" value="デザイナーズ"> デザイナーズ</label>
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:18px">
+        <label>構造のご希望（複数選択可）</label>
+        <div class="check-group" id="structure-group">
+          <label><input type="checkbox" value="木造"> 木造</label>
+          <label><input type="checkbox" value="軽量鉄骨"> 軽量鉄骨</label>
+          <label><input type="checkbox" value="鉄筋コンクリート（RC）"> RC造</label>
+          <label><input type="checkbox" value="鉄骨鉄筋コンクリート（SRC）"> SRC造</label>
+          <label><input type="checkbox" value="こだわらない（構造）"> こだわらない</label>
+        </div>
+      </div>
+      <div class="form-row single">
+        <div class="field">
+          <label>その他の要望・備考</label>
+          <textarea id="f_notes" placeholder="その他ご要望があればご記入ください…"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="submit-wrap">
+    <button class="btn-submit" onclick="submitForm()">登録する</button>
+  </div>
+</div>
+</div>
+
+<script>
+const STORAGE_KEY = 'sumai_records';
+let selectedStations = [];
+
+function buildRentSelect() {
+  const el = document.getElementById('f_rent');
+  el.innerHTML = '<option value="">こだわらない</option>';
+  for (let v = 30000; v <= 500000; v += 5000) {
+    const o = document.createElement('option');
+    o.value = v; o.textContent = v.toLocaleString() + ' 円';
+    el.appendChild(o);
+  }
+}
+function buildInitialSelect() {
+  const el = document.getElementById('f_initial');
+  el.innerHTML = '<option value="">こだわらない</option>';
+  for (let v = 10000; v <= 500000; v += 10000) {
+    const o = document.createElement('option');
+    o.value = v; o.textContent = v.toLocaleString() + ' 円';
+    el.appendChild(o);
+  }
+}
+function buildAreaSelect() {
+  const el = document.getElementById('f_area');
+  el.innerHTML = '<option value="">こだわらない</option>';
+  [15,18,20,22,25,28,30,33,35,40,45,50,55,60,70,80,90,100].forEach(v => {
+    const o = document.createElement('option');
+    o.value = v; o.textContent = v + ' ㎡';
+    el.appendChild(o);
+  });
+}
+
+const AREA_DATA = {
+  '東京都': {
+    'JR山手線': ['東京','有楽町','新橋','浜松町','田町','高輪ゲートウェイ','品川','大崎','五反田','目黒','恵比寿','渋谷','原宿','代々木','新宿','新大久保','高田馬場','目白','池袋','大塚','巣鴨','駒込','田端','西日暮里','日暮里','鶯谷','上野','御徒町','秋葉原','神田'],
+    'JR中央線（快速）': ['東京','神田','御茶ノ水','四ツ谷','新宿','中野','高円寺','阿佐ケ谷','荻窪','西荻窪','吉祥寺','三鷹','武蔵境','東小金井','武蔵小金井','国分寺','西国分寺','国立','立川','日野','豊田','八王子','西八王子','高尾'],
+    'JR総武線（各停）': ['新宿','千駄ケ谷','信濃町','四ツ谷','市ケ谷','飯田橋','水道橋','御茶ノ水','秋葉原','浅草橋','両国','錦糸町','亀戸','小岩','新小岩','本八幡','市川','幕張本郷','幕張','津田沼','新検見川','稲毛','西千葉','千葉'],
+    'JR京浜東北線': ['赤羽','東十条','王子','上中里','田端','西日暮里','日暮里','鶯谷','上野','御徒町','秋葉原','神田','東京','有楽町','新橋','浜松町','田町','高輪ゲートウェイ','品川','大井町','大森','蒲田'],
+    'JR埼京線': ['大崎','恵比寿','渋谷','新宿','池袋','板橋','十条','赤羽','北赤羽','浮間舟渡'],
+    'JR常磐線': ['上野','日暮里','三河島','南千住','北千住','松戸','柏','我孫子','取手'],
+    '東京メトロ銀座線': ['渋谷','表参道','外苑前','青山一丁目','赤坂見附','溜池山王','虎ノ門','新橋','銀座','京橋','日本橋','三越前','神田','末広町','上野広小路','上野','稲荷町','田原町','浅草'],
+    '東京メトロ丸ノ内線': ['荻窪','南阿佐ケ谷','新高円寺','東高円寺','新中野','中野坂上','西新宿','新宿','新宿三丁目','新宿御苑前','四谷三丁目','四ツ谷','赤坂見附','国会議事堂前','霞ケ関','銀座','東京','大手町','淡路町','御茶ノ水','本郷三丁目','後楽園','新大塚','茗荷谷','池袋'],
+    '東京メトロ日比谷線': ['北千住','南千住','三ノ輪','入谷','上野','仲御徒町','秋葉原','小伝馬町','人形町','茅場町','八丁堀','築地','東銀座','銀座','日比谷','霞ケ関','神谷町','六本木','広尾','恵比寿','中目黒'],
+    '東京メトロ東西線': ['中野','落合','高田馬場','早稲田','神楽坂','飯田橋','九段下','竹橋','大手町','日本橋','茅場町','門前仲町','木場','東陽町','南砂町','西葛西','葛西','浦安','南行徳','行徳','妙典','原木中山','西船橋'],
+    '東京メトロ千代田線': ['代々木上原','代々木公園','明治神宮前','表参道','乃木坂','赤坂','国会議事堂前','霞ケ関','日比谷','二重橋前','大手町','新御茶ノ水','湯島','根津','千駄木','西日暮里','町屋','北千住','綾瀬','北綾瀬'],
+    '東京メトロ有楽町線': ['和光市','地下鉄成増','地下鉄赤塚','平和台','氷川台','小竹向原','千川','要町','池袋','東池袋','護国寺','江戸川橋','飯田橋','市ケ谷','麹町','永田町','桜田門','有楽町','銀座一丁目','新富町','月島','豊洲','辰巳','新木場'],
+    '東京メトロ半蔵門線': ['渋谷','表参道','青山一丁目','永田町','半蔵門','九段下','神保町','大手町','三越前','水天宮前','清澄白河','住吉','錦糸町','押上'],
+    '東京メトロ南北線': ['目黒','白金台','白金高輪','麻布十番','六本木一丁目','溜池山王','永田町','四ツ谷','市ケ谷','飯田橋','後楽園','東大前','本駒込','駒込','西ケ原','王子','王子神谷','志茂','赤羽岩淵'],
+    '東京メトロ副都心線': ['渋谷','明治神宮前','北参道','新宿三丁目','西早稲田','東新宿','新宿','池袋','要町','千川','小竹向原','氷川台','平和台','地下鉄赤塚','地下鉄成増','和光市'],
+    '都営浅草線': ['西馬込','馬込','中延','戸越','五反田','高輪台','泉岳寺','三田','大門','新橋','東銀座','宝町','日本橋','人形町','東日本橋','浅草橋','蔵前','浅草','本所吾妻橋','押上'],
+    '都営三田線': ['目黒','白金台','白金高輪','三田','芝公園','御成門','内幸町','日比谷','大手町','神保町','水道橋','春日','白山','千石','巣鴨','西巣鴨','新板橋','板橋区役所前','板橋本町','本蓮沼','志村坂上','志村三丁目','蓮根','西台','高島平','新高島平','西高島平'],
+    '都営新宿線': ['新宿','新宿三丁目','曙橋','市ケ谷','九段下','神保町','小川町','岩本町','馬喰横山','浜町','森下','菊川','住吉','西大島','大島','東大島','船堀','一之江','瑞江','篠崎','本八幡'],
+    '都営大江戸線': ['都庁前','新宿','西新宿五丁目','中野坂上','東中野','中井','落合南長崎','新江古田','練馬','豊島園','練馬春日町','光が丘','国立競技場','青山一丁目','六本木','麻布十番','赤羽橋','大門','汐留','築地市場','勝どき','月島','門前仲町','清澄白河','森下','両国','蔵前','新御徒町','上野御徒町','本郷三丁目','春日','飯田橋','牛込神楽坂','牛込柳町','若松河田','東新宿'],
+    '京王線': ['新宿','笹塚','代田橋','明大前','下高井戸','桜上水','上北沢','八幡山','芦花公園','千歳烏山','仙川','つつじヶ丘','柴崎','国領','布田','調布','西調布','飛田給','武蔵野台','多磨霊園','東府中','府中','分倍河原','中河原','聖蹟桜ヶ丘','百草園','高幡不動','南平','平山城址公園','長沼','北野','八王子'],
+    '京王井の頭線': ['渋谷','神泉','駒場東大前','池ノ上','下北沢','新代田','東松原','明大前','永福町','西永福','浜田山','高井戸','富士見ヶ丘','久我山','三鷹台','井の頭公園','吉祥寺'],
+    '小田急線': ['新宿','南新宿','参宮橋','代々木八幡','代々木上原','東北沢','下北沢','世田谷代田','梅ヶ丘','豪徳寺','経堂','千歳船橋','祖師ヶ谷大蔵','成城学園前','喜多見','狛江','和泉多摩川','登戸','向ヶ丘遊園','生田','読売ランド前','百合ヶ丘','新百合ヶ丘','柿生','鶴川','玉川学園前','町田'],
+    '東急東横線': ['渋谷','代官山','中目黒','祐天寺','学芸大学','都立大学','自由が丘','田園調布','多摩川','新丸子','武蔵小杉','元住吉','日吉','綱島','大倉山','菊名','妙蓮寺','白楽','東白楽','反町','横浜'],
+    '東急田園都市線': ['渋谷','池尻大橋','三軒茶屋','駒沢大学','桜新町','用賀','二子玉川','二子新地','高津','溝の口','梶が谷','宮崎台','宮前平','鷺沼','たまプラーザ','あざみ野','江田','市が尾','藤が丘','青葉台','田奈','長津田','つくし野','すずかけ台','南町田グランベリーパーク','つきみ野','中央林間'],
+    '東急目黒線': ['目黒','不動前','武蔵小山','西小山','洗足','大岡山','奥沢','田園調布','多摩川','新丸子','武蔵小杉','元住吉','日吉'],
+    '東急世田谷線': ['三軒茶屋','西太子堂','若林','松陰神社前','世田谷','上町','宮の坂','山下','松原','下高井戸'],
+    '東急大井町線': ['大井町','下神明','戸越公園','中延','荏原町','旗の台','北千束','大岡山','緑が丘','自由が丘','九品仏','尾山台','等々力','上野毛','二子玉川','二子新地','高津','溝の口'],
+    '西武池袋線': ['池袋','椎名町','東長崎','江古田','桜台','練馬','中村橋','富士見台','中村','石神井公園','大泉学園','保谷','ひばりケ丘','東久留米','清瀬','秋津','所沢','西所沢','小手指','狭山ヶ丘','武蔵藤沢','稲荷山公園','入間市','仏子','元加治','飯能'],
+    '西武新宿線': ['西武新宿','高田馬場','下落合','中井','新井薬師前','沼袋','野方','都立家政','鷺ノ宮','下井草','井荻','上井草','上石神井','武蔵関','東伏見','西武柳沢','田無','花小金井','小平','久米川','東村山','所沢'],
+    '東武東上線': ['池袋','北池袋','下板橋','大山','中板橋','ときわ台','上板橋','東武練馬','下赤塚','成増','和光市'],
+    '東武スカイツリーライン': ['浅草','とうきょうスカイツリー','押上','曳舟','東向島','鐘ヶ淵','堀切','牛田','北千住','小菅','五反野','梅島','西新井','竹ノ塚'],
+    '京成線': ['上野','日暮里','新三河島','町屋','千住大橋','京成関屋','堀切菖蒲園','お花茶屋','青砥','京成高砂','京成小岩','江戸川'],
+    'りんかい線': ['大崎','品川シーサイド','天王洲アイル','東京テレポート','国際展示場','東雲','新木場'],
+    'ゆりかもめ': ['新橋','汐留','竹芝','日の出','芝浦ふ頭','お台場海浜公園','台場','テレコムセンター','青海','東京ビッグサイト','有明','新豊洲','豊洲'],
+  },
+  '神奈川県': {
+    'JR横須賀線': ['横浜','保土ケ谷','東戸塚','戸塚','大船','北鎌倉','鎌倉','逗子','東逗子','田浦','横須賀','衣笠','久里浜'],
+    'JR南武線': ['川崎','尻手','矢向','鹿島田','平間','向河原','武蔵小杉','武蔵中原','武蔵新城','武蔵溝ノ口','津田山','久地','宿河原','登戸','中野島','稲田堤','矢野口','稲城長沼','南多摩','府中本町'],
+    'JR根岸線': ['横浜','桜木町','関内','石川町','山手','根岸','磯子','新杉田','洋光台','港南台','本郷台','大船'],
+    '東急東横線': ['横浜','反町','東白楽','白楽','妙蓮寺','菊名','大倉山','綱島','日吉','元住吉','武蔵小杉','新丸子','多摩川','田園調布','自由が丘'],
+    '東急田園都市線': ['中央林間','つきみ野','南町田グランベリーパーク','すずかけ台','長津田','田奈','青葉台','藤が丘','市が尾','江田','あざみ野','たまプラーザ','鷺沼','宮前平','宮崎台','梶が谷','溝の口','高津','二子新地','二子玉川'],
+    '相鉄本線': ['横浜','平沼橋','西横浜','天王町','星川','和田町','上星川','西谷','鶴ケ峰','二俣川','希望ケ丘','三ツ境','瀬谷','大和','相模大塚','さがみ野','かしわ台','海老名'],
+    '相鉄いずみ野線': ['二俣川','南万騎が原','緑園都市','弥生台','いずみ野','いずみ中央','ゆめが丘','湘南台'],
+    '横浜市営地下鉄ブルーライン': ['あざみ野','センター北','センター南','仲町台','新羽','北新横浜','新横浜','岸根公園','片倉町','三ツ沢上町','三ツ沢下町','横浜','高島町','桜木町','関内','伊勢佐木長者町','阪東橋','吉野町','蒔田','弘明寺','上大岡','港南中央','上永谷','下永谷','踊場','戸塚','下飯田','立場','中田'],
+    '横浜市営地下鉄グリーンライン': ['日吉','日吉本町','高田','東山田','北山田','センター北','センター南','都筑ふれあいの丘','川和町','中山'],
+    '京急本線': ['品川','北品川','新馬場','青物横丁','鮫洲','立会川','大森海岸','平和島','大森町','梅屋敷','京急蒲田','雑色','六郷土手','京急川崎','八丁畷','鶴見市場','京急鶴見','花月総持寺','生麦','京急新子安','子安','神奈川新町','仲木戸','神奈川','横浜','戸部','日ノ出町','黄金町','南太田','井土ヶ谷','弘明寺','上大岡','屏風浦','杉田','京急富岡','能見台','金沢文庫','金沢八景','追浜','横須賀中央','久里浜'],
+    '小田急線': ['小田原','足柄','螢田','富水','栢山','開成','松田','新松田','渋沢','秦野','東海大学前','鶴巻温泉','伊勢原','愛甲石田','本厚木','厚木','海老名','相武台前','座間','相模大野','小田急相模原','町田'],
+    '江ノ電': ['藤沢','石上','柳小路','湘南海岸公園','江ノ島','腰越','鎌倉高校前','七里ケ浜','稲村ケ崎','極楽寺','長谷','由比ケ浜','和田塚','鎌倉'],
+  },
+  '埼玉県': {
+    'JR京浜東北線': ['川口','西川口','蕨','南浦和','浦和','北浦和','与野','さいたま新都心','大宮'],
+    'JR埼京線': ['大宮','北与野','与野本町','南与野','中浦和','武蔵浦和','北戸田','戸田','戸田公園','浮間舟渡','北赤羽'],
+    'JR高崎線': ['大宮','宮原','上尾','桶川','北本','鴻巣','吹上','行田','熊谷','籠原','深谷','岡部','本庄','神保原','新町','倉賀野','高崎'],
+    'JR宇都宮線': ['大宮','土呂','東大宮','蓮田','白岡','新白岡','久喜','東鷲宮','栗橋','古河'],
+    'JR武蔵野線': ['新秋津','東所沢','新座','北朝霞','朝霞台','志木','柳瀬川','みずほ台','鶴瀬','南越谷','越谷レイクタウン','吉川','吉川美南','新三郷','三郷'],
+    '東武東上線': ['和光市','朝霞','朝霞台','志木','柳瀬川','みずほ台','鶴瀬','ふじみ野','上福岡','新河岸','川越','川越市','霞ヶ関','鶴ヶ島','若葉','坂戸','北坂戸','高坂','東松山'],
+    '東武スカイツリーライン': ['草加','獨協大学前','新田','蒲生','新越谷','越谷','北越谷','大袋','せんげん台','武里','一ノ割','春日部','北春日部','姫宮','東武動物公園'],
+    '西武池袋線': ['所沢','西所沢','小手指','狭山ヶ丘','武蔵藤沢','稲荷山公園','入間市','仏子','元加治','飯能'],
+    '西武新宿線': ['所沢','航空公園','新所沢','入曽','狭山市','新狭山','南大塚','本川越'],
+  },
+  '千葉県': {
+    'JR総武線（快速）': ['市川','船橋','津田沼','稲毛','千葉'],
+    'JR総武線（各停）': ['本八幡','新小岩','小岩','市川','船橋'],
+    'JR京葉線': ['新木場','葛西臨海公園','舞浜','新浦安','市川塩浜','二俣新町','南船橋','新習志野','海浜幕張','検見川浜','稲毛海岸','千葉みなと','千葉'],
+    'JR武蔵野線': ['市川大野','船橋法典','西船橋'],
+    'JR外房線': ['千葉','本千葉','蘇我','鎌取','誉田','土気','大網','茂原'],
+    'JR内房線': ['千葉','本千葉','蘇我','浜野','八幡宿','五井','姉ケ崎','長浦','袖ケ浦','巌根','木更津'],
+    '東京メトロ東西線': ['西船橋','原木中山','妙典','行徳','南行徳','浦安','葛西','西葛西'],
+    '東葉高速鉄道': ['西船橋','東海神','飯山満','北習志野','船橋日大前','東葉勝田台'],
+    '新京成線': ['松戸','上本郷','松戸新田','みのり台','八柱','常盤平','五香','元山','くぬぎ山','北初富','新鎌ケ谷','初富','二和向台','三咲','滝不動','高根公団','高根木戸','北習志野','習志野','薬園台','前原','新津田沼','津田沼'],
+    '千葉都市モノレール': ['千葉','市役所前','千葉公園','作草部','天台','穴川','スポーツセンター','動物公園','みつわ台','都賀','桜木','小倉台','千城台北','千城台'],
+  }
+};
+
+function onPrefChange() {
+  const pref = document.getElementById('f_pref').value;
+  const lineEl = document.getElementById('f_line');
+  const list = document.getElementById('station-checkbox-list');
+  lineEl.innerHTML = '<option value="">路線を選択</option>';
+  lineEl.disabled = !pref;
+  list.innerHTML = '<span style="color:var(--mid);font-size:0.78rem;font-weight:300;">路線を選択すると表示されます</span>';
+  updateAddBtn();
+  if (!pref) return;
+  Object.keys(AREA_DATA[pref]).forEach(l => {
+    const o = document.createElement('option'); o.value = l; o.textContent = l;
+    lineEl.appendChild(o);
+  });
+}
+
+function onLineChange() {
+  const pref = document.getElementById('f_pref').value;
+  const line = document.getElementById('f_line').value;
+  const list = document.getElementById('station-checkbox-list');
+  list.innerHTML = '';
+  updateAddBtn();
+  if (!line) {
+    list.innerHTML = '<span style="color:var(--mid);font-size:0.78rem;font-weight:300;">路線を選択すると表示されます</span>';
+    return;
+  }
+  (AREA_DATA[pref][line] || []).forEach(s => {
+    const item = document.createElement('label');
+    item.className = 'st-cb-item';
+    const cb = document.createElement('input');
+    cb.type = 'checkbox'; cb.value = s;
+    cb.addEventListener('change', () => {
+      item.classList.toggle('checked', cb.checked);
+      updateAddBtn();
+    });
+    const box = document.createElement('span');
+    box.className = 'st-cb-box';
+    item.appendChild(cb); item.appendChild(box);
+    item.appendChild(document.createTextNode(s));
+    list.appendChild(item);
+  });
+}
+
+function updateAddBtn() {
+  const pref = document.getElementById('f_pref').value;
+  const line = document.getElementById('f_line').value;
+  const hasChecked = !!document.querySelector('#station-checkbox-list input:checked');
+  const btn = document.getElementById('btn-add-station');
+  const ready = !!(pref && line && hasChecked);
+  btn.disabled = !ready;
+  btn.classList.toggle('ready', ready);
+}
+
+function addStations() {
+  const pref = document.getElementById('f_pref').value;
+  const line = document.getElementById('f_line').value;
+  const checked = [...document.querySelectorAll('#station-checkbox-list input:checked')].map(el => el.value);
+  if (!checked.length) { showToast('⚠️ 駅を選択してください', true); return; }
+  let added = 0;
+  checked.forEach(st => {
+    if (!selectedStations.some(s => s.pref === pref && s.line === line && s.station === st)) {
+      selectedStations.push({ pref, line, station: st }); added++;
+    }
+  });
+  if (added === 0) { showToast('⚠️ 選択した駅はすでに追加済みです', true); return; }
+  renderTags();
+  showToast(`✓ ${added}駅を追加しました（合計 ${selectedStations.length}駅）`);
+  document.querySelectorAll('#station-checkbox-list input:checked').forEach(el => {
+    el.checked = false;
+    el.closest('.st-cb-item').classList.remove('checked');
+  });
+  updateAddBtn();
+}
+
+function clearAllStations() {
+  if (!selectedStations.length) return;
+  selectedStations = []; renderTags();
+  showToast('エリアをクリアしました');
+}
+
+function renderTags() {
+  const wrap = document.getElementById('station-tags');
+  const ph = document.getElementById('st-placeholder');
+  [...wrap.children].forEach(c => { if (c !== ph) c.remove(); });
+  if (!selectedStations.length) { ph.style.display = ''; return; }
+  ph.style.display = 'none';
+  selectedStations.forEach((s, i) => {
+    const tag = document.createElement('span');
+    tag.className = 'st-tag';
+    const lineSpan = document.createElement('span');
+    lineSpan.className = 'line-label';
+    lineSpan.textContent = s.line + ' ';
+    const nameNode = document.createTextNode(s.station);
+    const btn = document.createElement('button');
+    btn.type = 'button'; btn.title = '削除'; btn.textContent = '✕';
+    btn.addEventListener('click', () => { selectedStations.splice(i, 1); renderTags(); });
+    tag.appendChild(lineSpan); tag.appendChild(nameNode); tag.appendChild(btn);
+    wrap.appendChild(tag);
+  });
+}
+
+function submitForm() {
+  const name = document.getElementById('f_name').value.trim();
+  const kana = document.getElementById('f_kana').value.trim();
+  const tel  = document.getElementById('f_tel').value.trim();
+  const email = document.getElementById('f_email').value.trim();
+  const layout = document.getElementById('f_layout').value;
+  const moveinRaw = document.getElementById('f_movein').value;
+  const arrear = document.querySelector('input[name="arrear"]:checked');
+
+  if (!name || !kana || !tel || !email || !layout || !moveinRaw || !arrear || !selectedStations.length) {
+    showToast('⚠️ 必須項目をすべて入力し、駅を1つ以上追加してください', true); return;
+  }
+  const movein = new Date(moveinRaw).toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' });
+  const amenities = [...document.querySelectorAll('#amenities-group input:checked')].map(el => el.value);
+  const structure = [...document.querySelectorAll('#structure-group input:checked')].map(el => el.value);
+  const records = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  const rentVal = document.getElementById('f_rent').value;
+  const initVal = document.getElementById('f_initial').value;
+  const areaVal = document.getElementById('f_area').value;
+  records.unshift({
+    id: Date.now(),
+    date: new Date().toLocaleDateString('ja-JP'),
+    name, kana,
+    tel: document.getElementById('f_tel').value.trim() || '—',
+    email: document.getElementById('f_email').value.trim() || '—',
+    movein,
+    rent: rentVal ? Number(rentVal).toLocaleString() + '円' : '—',
+    initial: initVal ? Number(initVal).toLocaleString() + '円' : '—',
+    layout,
+    area: areaVal ? areaVal + '㎡以上' : '—',
+    age: document.getElementById('f_age').value || 'こだわらない',
+    walk: document.getElementById('f_walk').value || 'こだわらない',
+    floor: document.getElementById('f_floor').value || 'こだわらない',
+    structure: structure.join('、') || 'こだわらない',
+    stations: [...selectedStations],
+    station: selectedStations.map(s => `${s.station}（${s.line}）`).join('、'),
+    pref: selectedStations.map(s => s.pref).filter((v,i,a) => a.indexOf(v)===i).join('、'),
+    line: selectedStations.map(s => s.line).filter((v,i,a) => a.indexOf(v)===i).join('、'),
+    workplace: document.getElementById('f_workplace').value.trim() || '—',
+    arrear: arrear.value,
+    amenities: amenities.join('、') || '—',
+    notes: document.getElementById('f_notes').value.trim() || '—',
+  });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+  clearForm();
+  document.getElementById('success-overlay').classList.add('open');
+}
+
+function clearForm() {
+  ['f_name','f_kana','f_tel','f_email','f_notes','f_workplace'].forEach(id => document.getElementById(id).value = '');
+  ['f_movein','f_layout','f_age','f_walk','f_floor','f_structure','f_pref'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  document.getElementById('f_rent').value = '';
+  document.getElementById('f_initial').value = '';
+  document.getElementById('f_area').value = '';
+  document.querySelectorAll('input[name="arrear"]').forEach(r => r.checked = false);
+  document.querySelectorAll('#amenities-group input').forEach(c => c.checked = false);
+  document.querySelectorAll('#structure-group input').forEach(c => c.checked = false);
+  selectedStations = []; renderTags(); onPrefChange();
+  document.getElementById('station-checkbox-list').innerHTML = '<span style="color:var(--mid);font-size:0.78rem;font-weight:300;">路線を選択すると表示されます</span>';
+}
+
+function closeSuccessModal() {
+  document.getElementById('success-overlay').classList.remove('open');
+}
+
+function showToast(msg, warn = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.borderColor = warn ? 'rgba(192,83,58,0.5)' : 'rgba(200,165,110,0.35)';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+buildRentSelect(); buildInitialSelect(); buildAreaSelect();
+document.getElementById('f_movein').min = new Date().toISOString().split('T')[0];
+</script>
+</body>
+</html>

@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReL Group 賃貸サポート 管理シート</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --brown: #3a2a1a;
+  --brown2: #5c4033;
+  --brown3: #8b6e5a;
+  --accent: #b8956a;
+  --accent2: #d4b896;
+  --mid: #9a8070;
+  --glass: rgba(250,245,238,0.45);
+  --glass-border: rgba(255,245,230,0.65);
+  --shadow: 0 8px 40px rgba(40,20,5,0.18), inset 0 1px 0 rgba(255,248,235,0.8);
+  --red: #c0533a;
+  --green: #5a8a5a;
+}
+body {
+  font-family: 'Noto Sans JP', sans-serif;
+  min-height: 100vh; color: var(--brown);
+  position: relative; overflow-x: hidden;
+}
+.bg-photo {
+  position: fixed; inset: 0; z-index: 0;
+  background-image: url('https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&q=80&fit=crop');
+  background-size: cover; background-position: center;
+  filter: brightness(0.78) saturate(0.82);
+}
+.bg-overlay {
+  position: fixed; inset: 0; z-index: 1;
+  background: linear-gradient(160deg, rgba(45,28,12,0.45) 0%, rgba(60,38,18,0.32) 50%, rgba(35,22,8,0.42) 100%);
+}
+/* HEADER */
+.app-header {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(38,24,10,0.68);
+  backdrop-filter: blur(28px) saturate(1.5); -webkit-backdrop-filter: blur(28px) saturate(1.5);
+  border-bottom: 1px solid rgba(200,165,110,0.22);
+  padding: 0 32px; height: 62px;
+  display: flex; align-items: center; justify-content: space-between;
+  box-shadow: 0 2px 20px rgba(20,10,0,0.25);
+}
+.logo { font-family: 'Cormorant Garamond', serif; color: rgba(240,225,200,0.95); font-size: 1.3rem; font-weight: 600; letter-spacing: 0.08em; }
+.logo span { font-family: 'Noto Sans JP', sans-serif; font-weight: 300; font-size: 0.75rem; color: rgba(210,185,150,0.75); margin-left: 14px; letter-spacing: 0.12em; }
+.header-btn {
+  background: rgba(255,245,225,0.12); border: 1px solid rgba(200,165,110,0.3);
+  color: rgba(225,200,160,0.9); font-family: 'Noto Sans JP', sans-serif;
+  font-size: 0.78rem; font-weight: 500; letter-spacing: 0.06em;
+  padding: 7px 16px; border-radius: 8px; cursor: pointer; transition: all 0.2s;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+}
+.header-btn:hover { background: rgba(184,149,106,0.3); border-color: rgba(200,165,110,0.55); color: rgba(240,220,185,0.98); }
+
+/* PAGE */
+.page-wrap { position: relative; z-index: 2; }
+.sheet-outer { padding: 36px 28px 80px; max-width: 1500px; margin: 0 auto; }
+
+/* SHEET HEADER */
+.sheet-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 14px; }
+.sheet-header h1 {
+  font-family: 'Cormorant Garamond', serif; font-size: 1.7rem; font-weight: 600;
+  color: rgba(245,232,210,0.96); letter-spacing: 0.04em;
+  text-shadow: 0 2px 16px rgba(20,10,0,0.4);
+}
+.sheet-header h1 span { font-family: 'Noto Sans JP', sans-serif; font-size: 0.8rem; font-weight: 300; color: rgba(210,185,150,0.75); margin-left: 10px; }
+.sheet-controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+/* STATS */
+.stats-bar { display: flex; gap: 14px; margin-bottom: 22px; flex-wrap: wrap; }
+.stat-card {
+  background: var(--glass);
+  backdrop-filter: blur(24px) saturate(1.5); -webkit-backdrop-filter: blur(24px) saturate(1.5);
+  border: 1px solid var(--glass-border); border-radius: 14px;
+  padding: 14px 22px; min-width: 130px;
+  box-shadow: var(--shadow);
+  border-left: 2px solid rgba(184,149,106,0.6);
+}
+.stat-card .val { font-size: 1.7rem; font-weight: 700; color: var(--brown2); line-height: 1; }
+.stat-card .lbl { font-size: 0.68rem; color: var(--mid); margin-top: 4px; letter-spacing: 0.07em; }
+
+/* INPUTS */
+.search-input {
+  background: rgba(255,248,235,0.38); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(200,170,130,0.42); border-radius: 9px;
+  padding: 8px 15px; font-family: 'Noto Sans JP', sans-serif;
+  font-size: 0.82rem; color: var(--brown); outline: none;
+  width: 220px; transition: all 0.2s;
+  box-shadow: inset 0 1px 3px rgba(60,30,5,0.05);
+}
+.search-input:focus { border-color: var(--accent); background: rgba(255,250,240,0.62); }
+.search-input::placeholder { color: var(--mid); font-weight: 300; }
+.btn {
+  font-family: 'Noto Sans JP', sans-serif; font-size: 0.78rem; font-weight: 700;
+  letter-spacing: 0.07em; padding: 8px 18px; border-radius: 9px; cursor: pointer; transition: all 0.2s;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+}
+.btn-export {
+  background: rgba(184,149,106,0.28); color: rgba(240,215,175,0.95);
+  border: 1px solid rgba(200,165,110,0.4);
+}
+.btn-export:hover { background: rgba(184,149,106,0.5); }
+.btn-clear {
+  background: rgba(192,83,58,0.15); color: rgba(220,140,120,0.95);
+  border: 1px solid rgba(192,83,58,0.3); font-weight: 500;
+}
+.btn-clear:hover { background: rgba(192,83,58,0.32); }
+
+/* TABLE WRAP */
+.table-wrap {
+  background: rgba(250,244,234,0.38);
+  backdrop-filter: blur(32px) saturate(1.6) brightness(1.06); -webkit-backdrop-filter: blur(32px) saturate(1.6) brightness(1.06);
+  border: 1px solid rgba(220,190,150,0.45);
+  border-radius: 18px; overflow: auto;
+  box-shadow: 0 8px 40px rgba(40,20,5,0.18), inset 0 1px 0 rgba(255,248,235,0.7);
+}
+table { width: 100%; border-collapse: collapse; font-size: 0.8rem; min-width: 1150px; }
+thead { position: sticky; top: 0; z-index: 10; }
+thead tr { background: rgba(55,32,12,0.62); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+thead th {
+  padding: 13px 15px; text-align: left;
+  color: rgba(225,200,160,0.92); font-weight: 700; font-size: 0.68rem;
+  letter-spacing: 0.12em; text-transform: uppercase; white-space: nowrap;
+  cursor: pointer; user-select: none;
+  border-bottom: 1px solid rgba(200,165,110,0.2);
+}
+thead th:hover { color: rgba(240,215,175,0.98); }
+thead th.sorted-asc::after { content: ' ▲'; font-size: 0.6rem; }
+thead th.sorted-desc::after { content: ' ▼'; font-size: 0.6rem; }
+tbody tr { border-bottom: 1px solid rgba(200,170,130,0.15); transition: background 0.15s; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: rgba(184,149,106,0.08); }
+tbody td { padding: 12px 15px; color: var(--brown2); vertical-align: middle; white-space: nowrap; }
+tbody td.wrap { white-space: normal; max-width: 170px; font-size: 0.74rem; }
+.td-date { color: var(--mid); font-size: 0.72rem; }
+.td-no { color: var(--accent); font-weight: 700; font-size: 0.72rem; }
+.badge-arrear {
+  display: inline-block; padding: 3px 10px; border-radius: 10px; font-size: 0.7rem; font-weight: 700;
+}
+.badge-arrear.none { background: rgba(90,138,90,0.15); color: var(--green); }
+.badge-arrear.yes  { background: rgba(192,83,58,0.14); color: var(--red); }
+.badge-arrear.unknown { background: rgba(154,128,112,0.15); color: var(--mid); }
+
+.btn-detail {
+  background: rgba(184,149,106,0.18); border: 1px solid rgba(184,149,106,0.35);
+  color: var(--brown2); border-radius: 6px; padding: 4px 10px;
+  font-size: 0.7rem; cursor: pointer; font-family: 'Noto Sans JP', sans-serif;
+  transition: all 0.15s; margin-right: 4px;
+}
+.btn-detail:hover { background: rgba(184,149,106,0.4); }
+.btn-del {
+  background: none; border: 1px solid rgba(192,83,58,0.28); color: var(--red);
+  border-radius: 6px; padding: 4px 10px; font-size: 0.7rem; cursor: pointer;
+  font-family: 'Noto Sans JP', sans-serif; transition: all 0.15s;
+}
+.btn-del:hover { background: rgba(192,83,58,0.18); }
+
+.empty-state { padding: 80px 24px; text-align: center; color: rgba(210,185,150,0.75); }
+.empty-state .big { font-size: 3rem; margin-bottom: 12px; }
+.empty-state p { font-size: 0.88rem; font-weight: 300; }
+
+/* MODAL */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(30,16,5,0.65);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  display: none; align-items: center; justify-content: center; padding: 24px;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: rgba(250,244,234,0.82);
+  backdrop-filter: blur(36px) saturate(1.6); -webkit-backdrop-filter: blur(36px) saturate(1.6);
+  border: 1px solid rgba(220,190,150,0.55);
+  border-radius: 20px; max-width: 580px; width: 100%;
+  max-height: 90vh; overflow-y: auto;
+  box-shadow: 0 24px 80px rgba(30,15,4,0.35);
+  animation: modalIn 0.22s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes modalIn { from { transform: scale(0.93); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal-head {
+  background: rgba(50,30,10,0.55);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  padding: 18px 26px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-radius: 20px 20px 0 0;
+  border-bottom: 1px solid rgba(200,165,110,0.2);
+}
+.modal-head h3 { font-family: 'Cormorant Garamond', serif; color: rgba(240,225,195,0.96); font-size: 1.05rem; font-weight: 600; letter-spacing: 0.05em; }
+.modal-close { background: none; border: none; color: rgba(200,175,140,0.75); font-size: 1.3rem; cursor: pointer; line-height: 1; }
+.modal-close:hover { color: rgba(240,215,180,0.98); }
+.modal-body { padding: 24px 26px; }
+.modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.modal-field .lbl { font-size: 0.68rem; font-weight: 700; color: var(--mid); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 3px; }
+.modal-field .val { font-size: 0.88rem; color: var(--brown2); font-weight: 500; }
+.modal-field.full { grid-column: 1 / -1; }
+.modal-divider { grid-column: 1 / -1; height: 1px; background: rgba(200,170,130,0.2); margin: 2px 0; }
+
+.btn-copy {
+  background: rgba(90,110,80,0.18); border: 1px solid rgba(110,140,90,0.35); color: #6a8a5a;
+  border-radius: 6px; padding: 4px 10px; font-size: 0.7rem; cursor: pointer;
+  font-family: 'Noto Sans JP', sans-serif; transition: all 0.15s; margin-right: 4px;
+}
+.btn-copy:hover { background: rgba(90,130,70,0.28); }
+.btn-copy.copied { background: rgba(90,130,70,0.35); color: #3a6a2a; border-color: rgba(90,130,70,0.5); }
+
+/* TOAST */
+.toast {
+  position: fixed; bottom: 32px; left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: rgba(42,26,12,0.88); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(200,165,110,0.3); color: rgba(240,220,185,0.96);
+  padding: 12px 28px; border-radius: 50px;
+  font-size: 0.84rem; font-weight: 500; letter-spacing: 0.05em;
+  transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  z-index: 9999; white-space: nowrap; box-shadow: 0 8px 32px rgba(20,8,0,0.35);
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(184,149,106,0.4); border-radius: 2px; }
+
+@media (max-width: 640px) {
+  .sheet-outer { padding: 24px 14px 60px; }
+  .app-header { padding: 0 16px; }
+  .logo span { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-photo"></div>
+<div class="bg-overlay"></div>
+
+<header class="app-header">
+  <div class="logo">ReL Group <span>賃貸サポート 管理シート</span></div>
+  <button class="header-btn" onclick="window.open('form.html','_blank')">依頼フォームを開く →</button>
+</header>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modal-title">詳細</h3>
+      <button class="modal-close" onclick="document.getElementById('modal').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-grid" id="modal-grid"></div>
+    </div>
+  </div>
+</div>
+
+<div class="page-wrap">
+<div class="sheet-outer">
+  <div class="sheet-header">
+    <h1>管理シート <span id="total-count">0件</span></h1>
+    <div class="sheet-controls">
+      <input class="search-input" type="text" placeholder="名前・駅名で検索" oninput="applyFilters()">
+      <button class="btn btn-export" onclick="exportCSV('all')">CSV 全件</button>
+      <button class="btn btn-export" onclick="exportCSV('filtered')" style="background:rgba(140,100,60,0.32);border-color:rgba(180,145,100,0.5);">CSV 表示中</button>
+      <button class="btn btn-clear" onclick="clearAll()">全件削除</button>
+    </div>
+  </div>
+
+  <div class="stats-bar" id="stats-bar"></div>
+
+  <!-- 絞り込み -->
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center;">
+    <span style="font-size:0.72rem;font-weight:700;color:rgba(210,185,150,0.7);letter-spacing:0.1em;">絞り込み</span>
+    <select class="search-input" id="filter-layout" onchange="applyFilters()" style="width:auto;padding:7px 12px;">
+      <option value="">間取り：すべて</option>
+      <option>ワンルーム</option><option>1K</option><option>1DK</option><option>1LDK</option>
+      <option>2K</option><option>2DK</option><option>2LDK</option><option>3LDK以上</option>
+    </select>
+    <select class="search-input" id="filter-arrear" onchange="applyFilters()" style="width:auto;padding:7px 12px;">
+      <option value="">滞納歴：すべて</option>
+      <option value="なし">なし</option><option value="あり">あり</option><option value="不明">不明</option>
+    </select>
+    <select class="search-input" id="filter-walk" onchange="applyFilters()" style="width:auto;padding:7px 12px;">
+      <option value="">駅徒歩：すべて</option>
+      <option>3分以内</option><option>5分以内</option><option>7分以内</option>
+      <option>10分以内</option><option>15分以内</option><option>20分以内</option>
+    </select>
+    <button onclick="resetFilters()" style="background:none;border:1px solid rgba(200,165,110,0.3);color:rgba(210,185,150,0.7);border-radius:7px;padding:6px 14px;font-size:0.72rem;font-family:'Noto Sans JP',sans-serif;cursor:pointer;transition:all 0.15s;"
+      onmouseover="this.style.background='rgba(184,149,106,0.15)'" onmouseout="this.style.background='none'">リセット</button>
+  </div>
+    <table id="data-table">
+      <thead>
+        <tr>
+          <th onclick="sortBy('index')">No.</th>
+          <th onclick="sortBy('date')">登録日</th>
+          <th onclick="sortBy('name')">お名前</th>
+          <th onclick="sortBy('movein')">入居希望日</th>
+          <th onclick="sortBy('rent')">家賃上限</th>
+          <th onclick="sortBy('initial')">初期費用</th>
+          <th onclick="sortBy('layout')">間取り</th>
+          <th>広さ</th>
+          <th>築年数</th>
+          <th>駅徒歩</th>
+          <th onclick="sortBy('station')">希望エリア</th>
+          <th onclick="sortBy('arrear')">滞納歴</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="table-body"></tbody>
+    </table>
+    <div class="empty-state" id="empty-state">
+      <div class="big" style="font-size:2rem;letter-spacing:0.2em;color:rgba(184,149,106,0.5);">◆ ◇ ◆</div>
+      <p>データがありません。<br>フォームから登録してください。</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+const STORAGE_KEY = 'sumai_records';
+let records = [];
+let sortKey = 'index', sortDir = 'desc';
+
+function load() {
+  records = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  document.getElementById('total-count').textContent = records.length + '件';
+  renderStats(); applyFilters();
+}
+
+let currentFiltered = [];
+
+function applyFilters() {
+  const q       = document.querySelector('.search-input').value.toLowerCase();
+  const layout  = document.getElementById('filter-layout').value;
+  const arrear  = document.getElementById('filter-arrear').value;
+  const walk    = document.getElementById('filter-walk').value;
+
+  currentFiltered = records.filter(r =>
+    (!q      || r.name.toLowerCase().includes(q) || (r.station||'').toLowerCase().includes(q)) &&
+    (!layout || r.layout === layout) &&
+    (!arrear || r.arrear === arrear) &&
+    (!walk   || r.walk   === walk)
+  );
+  currentFiltered = sortRecords(currentFiltered);
+  renderTable(currentFiltered);
+  // 絞り込み件数をカウント表示
+  const label = currentFiltered.length < records.length
+    ? `${currentFiltered.length}件 / ${records.length}件中`
+    : `${records.length}件`;
+  document.getElementById('total-count').textContent = label;
+}
+
+function resetFilters() {
+  document.querySelector('.search-input').value = '';
+  document.getElementById('filter-layout').value = '';
+  document.getElementById('filter-arrear').value = '';
+  document.getElementById('filter-walk').value = '';
+  applyFilters();
+}
+
+function sortRecords(arr) {
+  return [...arr].sort((a, b) => {
+    let va = sortKey === 'index' ? records.indexOf(a) : (a[sortKey] || '');
+    let vb = sortKey === 'index' ? records.indexOf(b) : (b[sortKey] || '');
+    if (va < vb) return sortDir === 'asc' ? -1 : 1;
+    if (va > vb) return sortDir === 'asc' ? 1 : -1;
+    return 0;
+  });
+}
+
+function sortBy(key) {
+  if (sortKey === key) sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+  else { sortKey = key; sortDir = 'asc'; }
+  document.querySelectorAll('thead th').forEach(th => th.classList.remove('sorted-asc','sorted-desc'));
+  const cols = ['index','date','name','movein','rent','initial','layout',null,null,null,'station','arrear',null];
+  const idx = cols.indexOf(key);
+  if (idx >= 0) document.querySelectorAll('thead th')[idx].classList.add('sorted-' + sortDir);
+  applyFilters();
+}
+
+function renderTable(filtered) {
+  const body = document.getElementById('table-body');
+  const empty = document.getElementById('empty-state');
+  const tbl = document.getElementById('data-table');
+  body.innerHTML = '';
+  if (!filtered.length) { empty.style.display = 'block'; tbl.style.display = 'none'; return; }
+  empty.style.display = 'none'; tbl.style.display = 'table';
+  filtered.forEach(r => {
+    const no = records.indexOf(r) + 1;
+    const ac = r.arrear === 'なし' ? 'none' : r.arrear === 'あり' ? 'yes' : 'unknown';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="td-no">#${String(no).padStart(3,'0')}</td>
+      <td class="td-date">${r.date}</td>
+      <td><strong>${r.name}</strong><br><span style="font-size:0.7rem;color:var(--mid);font-weight:300;">${r.kana||''}</span></td>
+      <td>${r.movein}</td>
+      <td>${r.rent}</td>
+      <td>${r.initial}</td>
+      <td>${r.layout}</td>
+      <td>${r.area}</td>
+      <td>${r.age}</td>
+      <td>${r.walk}</td>
+      <td class="wrap">${r.station||'—'}</td>
+      <td><span class="badge-arrear ${ac}">${r.arrear}</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn-copy" id="copy-${r.id}" onclick="copyRecord(${r.id})">コピー</button>
+        <button class="btn-detail" onclick="showDetail(${r.id})">詳細</button>
+        <button class="btn-del" onclick="deleteRecord(${r.id})">削除</button>
+      </td>`;
+    body.appendChild(tr);
+  });
+}
+
+function renderStats() {
+  const bar = document.getElementById('stats-bar');
+  const rents = records.filter(r => r.rent !== '—').map(r => parseInt(r.rent.replace(/[^0-9]/g,'')));
+  const avg = rents.length ? Math.round(rents.reduce((a,b)=>a+b,0)/rents.length).toLocaleString() : '—';
+  const layouts = {}; records.forEach(r => layouts[r.layout] = (layouts[r.layout]||0)+1);
+  const top = Object.entries(layouts).sort((a,b)=>b[1]-a[1])[0];
+  const noArrear = records.filter(r => r.arrear === 'なし').length;
+  bar.innerHTML = `
+    <div class="stat-card"><div class="val">${records.length}</div><div class="lbl">総登録件数</div></div>
+    <div class="stat-card"><div class="val">${avg !== '—' ? avg+'円' : '—'}</div><div class="lbl">平均希望家賃</div></div>
+    <div class="stat-card"><div class="val">${top ? top[0] : '—'}</div><div class="lbl">人気の間取り</div></div>
+    <div class="stat-card"><div class="val">${noArrear}</div><div class="lbl">滞納歴なし</div></div>`;
+}
+
+function showDetail(id) {
+  const r = records.find(rec => rec.id === id); if (!r) return;
+  document.getElementById('modal-title').textContent = r.name + ' 様 — 詳細';
+  document.getElementById('modal-grid').innerHTML = `
+    <div class="modal-field"><div class="lbl">登録日</div><div class="val">${r.date}</div></div>
+    <div class="modal-field"><div class="lbl">ふりがな</div><div class="val">${r.kana||'—'}</div></div>
+    <div class="modal-field"><div class="lbl">電話番号</div><div class="val">${r.tel||'—'}</div></div>
+    <div class="modal-field"><div class="lbl">メール</div><div class="val">${r.email||'—'}</div></div>
+    <div class="modal-divider"></div>
+    <div class="modal-field"><div class="lbl">入居希望日</div><div class="val">${r.movein}</div></div>
+    <div class="modal-field"><div class="lbl">滞納歴</div><div class="val">${r.arrear}</div></div>
+    <div class="modal-field"><div class="lbl">家賃上限</div><div class="val">${r.rent}</div></div>
+    <div class="modal-field"><div class="lbl">初期費用</div><div class="val">${r.initial}</div></div>
+    <div class="modal-divider"></div>
+    <div class="modal-field"><div class="lbl">間取り</div><div class="val">${r.layout}</div></div>
+    <div class="modal-field"><div class="lbl">広さ</div><div class="val">${r.area}</div></div>
+    <div class="modal-field"><div class="lbl">築年数</div><div class="val">${r.age}</div></div>
+    <div class="modal-field"><div class="lbl">駅徒歩</div><div class="val">${r.walk}</div></div>
+    <div class="modal-field"><div class="lbl">階数</div><div class="val">${r.floor||'—'}</div></div>
+    <div class="modal-field"><div class="lbl">構造</div><div class="val">${r.structure||'—'}</div></div>
+    <div class="modal-divider"></div>
+    <div class="modal-field full"><div class="lbl">希望エリア</div><div class="val">${r.station||'—'}</div></div>
+    <div class="modal-field full"><div class="lbl">職場・よく行くエリア</div><div class="val">${r.workplace||'—'}</div></div>
+    <div class="modal-field full"><div class="lbl">こだわり条件</div><div class="val">${r.amenities}</div></div>
+    <div class="modal-field full"><div class="lbl">備考</div><div class="val">${r.notes}</div></div>`;
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('modal')) document.getElementById('modal').classList.remove('open');
+}
+
+function deleteRecord(id) {
+  if (!confirm('このレコードを削除しますか？')) return;
+  records = records.filter(r => r.id !== id);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+  load(); showToast('削除しました');
+}
+
+function clearAll() {
+  if (!confirm('全件削除しますか？この操作は元に戻せません。')) return;
+  records = []; localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+  load(); showToast('全件削除しました');
+}
+
+function buildCSVRows(target) {
+  const headers = ['No','登録日','名前','ふりがな','電話','メール','入居希望日','家賃上限','初期費用','間取り','広さ','築年数','駅徒歩','階数','構造','希望エリア','職場・よく行くエリア','滞納歴','こだわり','備考'];
+  const rows = target.map((r,i) => [
+    i+1, r.date, r.name, r.kana||'—', r.tel||'—', r.email||'—', r.movein,
+    r.rent, r.initial, r.layout, r.area, r.age, r.walk, r.floor||'—', r.structure||'—',
+    r.station||'—', r.workplace||'—', r.arrear, r.amenities, r.notes
+  ]);
+  return [headers,...rows].map(row => row.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+}
+
+function exportCSV(mode) {
+  const target = mode === 'filtered' ? currentFiltered : records;
+  if (!target.length) { showToast('出力するデータがありません'); return; }
+  const csv = buildCSVRows(target);
+  const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  const label = mode === 'filtered' ? '絞込' : '全件';
+  a.download = `ReL_賃貸依頼_${label}_${new Date().toLocaleDateString('ja-JP').replace(/\//g,'-')}.csv`;
+  a.click(); showToast(`CSV を出力しました（${label}・${target.length}件）`);
+}
+
+function copyRecord(id) {
+  const r = records.find(rec => rec.id === id); if (!r) return;
+  const rentFmt = r.rent !== '—' ? '¥' + r.rent.replace('円','').trim() : '—';
+  const initFmt = r.initial !== '—' ? '¥' + r.initial.replace('円','').trim() : '—';
+  const text =
+`【賃貸物件希望者】
+〜基本情報〜
+お名前：${r.name}
+ふりがな：${r.kana||'—'}
+電話番号：${r.tel||'—'}
+メールアドレス：${r.email||'—'}
+
+〜物件について〜
+入居希望日：${r.movein}
+家賃：${rentFmt}
+初期費用予算：${initFmt}
+※敷金、礼金がある場合家賃の5倍が相場です。
+築年数：${r.age}
+間取り：${r.layout}
+広さ：${r.area}
+駅徒歩：${r.walk}
+階数：${r.floor||'—'}
+最寄駅：${r.station||'—'}
+※駅名、沿線等
+職場及びよく行く場所：${r.workplace||'—'}
+過去滞納歴があるか：${r.arrear}
+こだわり条件：
+${r.amenities}`;
+
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copy-' + id);
+    if (btn) { btn.textContent = '✓ コピー済'; btn.classList.add('copied'); setTimeout(() => { btn.textContent = 'コピー'; btn.classList.remove('copied'); }, 2500); }
+    showToast('クリップボードにコピーしました');
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    showToast('クリップボードにコピーしました');
+  });
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast'); t.textContent = msg;
+  t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+window.addEventListener('storage', e => { if (e.key === STORAGE_KEY) load(); });
+setInterval(() => {
+  const fresh = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  if (JSON.stringify(fresh) !== JSON.stringify(records)) load();
+}, 3000);
+
+load();
+</script>
+</body>
+</html>
