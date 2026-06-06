@@ -459,17 +459,66 @@ function closeModal(e) {
   if (e.target === document.getElementById('modal')) document.getElementById('modal').classList.remove('open');
 }
 
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbzupYxBIqkyplr0dQhFCd4Ml4vvR-gceVw_3W1V-v6vvgW_Fh8pZmoQMCU-owIhBNNmVA/exec';
+
+function load() {
+  // ローディング表示
+  document.getElementById('empty-state').style.display = 'none';
+  document.getElementById('data-table').style.display = 'none';
+  document.getElementById('total-count').textContent = '読込中…';
+
+  fetch(GAS_URL)
+    .then(res => res.json())
+    .then(json => {
+      if (json.result !== 'success') throw new Error(json.message);
+      // スプレッドシートのヘッダー名→JSキー のマッピング
+      records = json.data.map((r, i) => ({
+        id:        i + 1,
+        date:      r['登録日']           || '—',
+        name:      r['お名前']           || '—',
+        kana:      r['ふりがな']         || '—',
+        tel:       r['電話番号']         || '—',
+        email:     r['メール']           || '—',
+        movein:    r['入居希望日']       || '—',
+        rent:      r['家賃上限']         || '—',
+        initial:   r['初期費用']         || '—',
+        layout:    r['間取り']           || '—',
+        area:      r['広さ']             || '—',
+        age:       r['築年数']           || '—',
+        walk:      r['駅徒歩']           || '—',
+        floor:     r['階数']             || '—',
+        structure: r['構造']             || '—',
+        station:   r['希望エリア']       || '—',
+        workplace: r['職場・よく行くエリア'] || '—',
+        arrear:    r['滞納歴']           || '—',
+        amenities: r['こだわり条件']     || '—',
+        notes:     r['備考']             || '—',
+      }));
+      document.getElementById('total-count').textContent = records.length + '件';
+      renderStats();
+      applyFilters();
+    })
+    .catch(err => {
+      document.getElementById('total-count').textContent = 'エラー';
+      showToast('データの取得に失敗しました');
+      console.error(err);
+    });
+}
+
 function deleteRecord(id) {
-  if (!confirm('このレコードを削除しますか？')) return;
+  if (!confirm('このレコードを削除しますか？\n※スプレッドシート側も削除するには直接シートで行を削除してください。')) return;
   records = records.filter(r => r.id !== id);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
-  load(); showToast('削除しました');
+  renderStats();
+  applyFilters();
+  showToast('削除しました（画面上のみ）');
 }
 
 function clearAll() {
-  if (!confirm('全件削除しますか？この操作は元に戻せません。')) return;
-  records = []; localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
-  load(); showToast('全件削除しました');
+  if (!confirm('画面上の全データを非表示にしますか？\n※スプレッドシートのデータは残ります。再読込すると戻ります。')) return;
+  records = [];
+  renderStats();
+  applyFilters();
+  showToast('非表示にしました');
 }
 
 function buildCSVRows(target) {
@@ -539,11 +588,8 @@ function showToast(msg) {
   t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2800);
 }
 
-window.addEventListener('storage', e => { if (e.key === STORAGE_KEY) load(); });
-setInterval(() => {
-  const fresh = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-  if (JSON.stringify(fresh) !== JSON.stringify(records)) load();
-}, 3000);
+// 30秒ごとに自動更新
+setInterval(load, 30000);
 
 load();
 </script>
