@@ -802,52 +802,68 @@ function renderTags() {
   });
 }
 
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbxD-rWST-Ji7CYnDI_OmRhBdABq30M4s8fnIZgoKU-uERcEpDiBJ-qF_MmOSVDQbpdKCg/exec';
+
 function submitForm() {
-  const name = document.getElementById('f_name').value.trim();
-  const kana = document.getElementById('f_kana').value.trim();
-  const tel  = document.getElementById('f_tel').value.trim();
-  const email = document.getElementById('f_email').value.trim();
-  const layout = document.getElementById('f_layout').value;
+  const name     = document.getElementById('f_name').value.trim();
+  const kana     = document.getElementById('f_kana').value.trim();
+  const tel      = document.getElementById('f_tel').value.trim();
+  const email    = document.getElementById('f_email').value.trim();
+  const layout   = document.getElementById('f_layout').value;
   const moveinRaw = document.getElementById('f_movein').value;
-  const arrear = document.querySelector('input[name="arrear"]:checked');
+  const arrear   = document.querySelector('input[name="arrear"]:checked');
 
   if (!name || !kana || !tel || !email || !layout || !moveinRaw || !arrear || !selectedStations.length) {
     showToast('⚠️ 必須項目をすべて入力し、駅を1つ以上追加してください', true); return;
   }
-  const movein = new Date(moveinRaw).toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  const movein   = new Date(moveinRaw).toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' });
   const amenities = [...document.querySelectorAll('#amenities-group input:checked')].map(el => el.value);
   const structure = [...document.querySelectorAll('#structure-group input:checked')].map(el => el.value);
-  const records = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-  const rentVal = document.getElementById('f_rent').value;
-  const initVal = document.getElementById('f_initial').value;
-  const areaVal = document.getElementById('f_area').value;
-  records.unshift({
-    id: Date.now(),
-    date: new Date().toLocaleDateString('ja-JP'),
-    name, kana,
-    tel: document.getElementById('f_tel').value.trim() || '—',
-    email: document.getElementById('f_email').value.trim() || '—',
-    movein,
-    rent: rentVal ? Number(rentVal).toLocaleString() + '円' : '—',
-    initial: initVal ? Number(initVal).toLocaleString() + '円' : '—',
+  const rentVal  = document.getElementById('f_rent').value;
+  const initVal  = document.getElementById('f_initial').value;
+  const areaVal  = document.getElementById('f_area').value;
+
+  const payload = {
+    date:      new Date().toLocaleDateString('ja-JP'),
+    name, kana, tel, email, movein,
+    rent:      rentVal ? Number(rentVal).toLocaleString() + '円' : '—',
+    initial:   initVal ? Number(initVal).toLocaleString() + '円' : '—',
     layout,
-    area: areaVal ? areaVal + '㎡以上' : '—',
-    age: document.getElementById('f_age').value || 'こだわらない',
-    walk: document.getElementById('f_walk').value || 'こだわらない',
-    floor: document.getElementById('f_floor').value || 'こだわらない',
+    area:      areaVal ? areaVal + '㎡以上' : '—',
+    age:       document.getElementById('f_age').value || 'こだわらない',
+    walk:      document.getElementById('f_walk').value || 'こだわらない',
+    floor:     document.getElementById('f_floor').value || 'こだわらない',
     structure: structure.join('、') || 'こだわらない',
-    stations: [...selectedStations],
-    station: selectedStations.map(s => `${s.station}（${s.line}）`).join('、'),
-    pref: selectedStations.map(s => s.pref).filter((v,i,a) => a.indexOf(v)===i).join('、'),
-    line: selectedStations.map(s => s.line).filter((v,i,a) => a.indexOf(v)===i).join('、'),
+    station:   selectedStations.map(s => `${s.station}（${s.line}）`).join('、'),
     workplace: document.getElementById('f_workplace').value.trim() || '—',
-    arrear: arrear.value,
+    arrear:    arrear.value,
     amenities: amenities.join('、') || '—',
-    notes: document.getElementById('f_notes').value.trim() || '—',
+    notes:     document.getElementById('f_notes').value.trim() || '—',
+  };
+
+  // 送信ボタンを無効化してローディング表示
+  const btn = document.querySelector('.btn-submit');
+  btn.disabled = true;
+  btn.textContent = '送信中…';
+
+  fetch(GAS_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+  .then(() => {
+    clearForm();
+    document.getElementById('success-overlay').classList.add('open');
+  })
+  .catch(() => {
+    showToast('⚠️ 送信に失敗しました。通信環境を確認してください。', true);
+  })
+  .finally(() => {
+    btn.disabled = false;
+    btn.textContent = '登録する';
   });
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
-  clearForm();
-  document.getElementById('success-overlay').classList.add('open');
 }
 
 function clearForm() {
