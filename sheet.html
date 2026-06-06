@@ -380,6 +380,30 @@ function sortBy(key) {
   applyFilters();
 }
 
+function fmtDate(str) {
+  // 登録日: yyyy/mm/dd hh:mm
+  if (!str || str === '—') return '—';
+  const d = new Date(str);
+  if (isNaN(d)) return str; // すでにフォーマット済みならそのまま
+  const y = d.getFullYear();
+  const mo = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  const h = String(d.getHours()).padStart(2,'0');
+  const mi = String(d.getMinutes()).padStart(2,'0');
+  return `${y}/${mo}/${day} ${h}:${mi}`;
+}
+
+function fmtDateOnly(str) {
+  // 入居希望日: yyyy/mm/dd
+  if (!str || str === '—') return '—';
+  const d = new Date(str);
+  if (isNaN(d)) return str;
+  const y = d.getFullYear();
+  const mo = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  return `${y}/${mo}/${day}`;
+}
+
 function renderTable(filtered) {
   const body = document.getElementById('table-body');
   const empty = document.getElementById('empty-state');
@@ -393,9 +417,9 @@ function renderTable(filtered) {
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td class="td-no">#${String(no).padStart(3,'0')}</td>
-      <td class="td-date">${r.date}</td>
+      <td class="td-date">${fmtDate(r.date)}</td>
       <td><strong>${r.name}</strong><br><span style="font-size:0.7rem;color:var(--mid);font-weight:300;">${r.kana||''}</span></td>
-      <td>${r.movein}</td>
+      <td>${fmtDateOnly(r.movein)}</td>
       <td>${r.rent}</td>
       <td>${r.initial}</td>
       <td>${r.layout}</td>
@@ -548,26 +572,24 @@ function copyRecord(id) {
   const initFmt = r.initial !== '—' ? '¥' + r.initial.replace('円','').trim() : '—';
   const text =
 `【賃貸物件希望者】
-〜基本情報〜
+〇基本情報
 お名前：${r.name}
 ふりがな：${r.kana||'—'}
 電話番号：${r.tel||'—'}
 メールアドレス：${r.email||'—'}
 
-〜物件について〜
+〇物件について
 入居希望日：${r.movein}
 家賃：${rentFmt}
 初期費用予算：${initFmt}
-※敷金、礼金がある場合家賃の5倍が相場です。
 築年数：${r.age}
 間取り：${r.layout}
 広さ：${r.area}
 駅徒歩：${r.walk}
 階数：${r.floor||'—'}
 最寄駅：${r.station||'—'}
-※駅名、沿線等
 職場及びよく行く場所：${r.workplace||'—'}
-過去滞納歴があるか：${r.arrear}
+過去滞納歴：${r.arrear}
 こだわり条件：
 ${r.amenities}`;
 
