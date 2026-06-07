@@ -140,6 +140,28 @@ body {
 .field.error .station-list-wrap, .field.error .station-tags-area { border-color: #d6453a !important; box-shadow: 0 0 0 3px rgba(214,69,58,0.15) !important; }
 .field label .hint { color: var(--mid); font-weight: 300; font-size: 0.68rem; display: block; margin-top: 1px; }
 
+/* 項目クリア×ボタン（入力欄内・右端） */
+.input-wrap { position: relative; display: block; }
+.input-wrap > input, .input-wrap > select, .input-wrap > textarea { width: 100%; }
+.input-wrap > input, .input-wrap > textarea { padding-right: 34px !important; }
+.input-wrap > select { padding-right: 50px !important; }
+.clear-x {
+  position: absolute; right: 9px; top: 50%; transform: translateY(-50%);
+  width: 18px; height: 18px; border-radius: 50%;
+  border: none;
+  background: rgba(150,110,75,0.18);
+  color: rgba(110,75,48,0.78); font-size: 0.62rem;
+  line-height: 1; cursor: pointer; padding: 0;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.15s, background 0.15s, color 0.15s;
+  font-family: 'Noto Sans JP', sans-serif; z-index: 2;
+}
+/* セレクトは右端の矢印を避けて×を少し左に */
+.input-wrap:has(> select) .clear-x { right: 26px; }
+.input-wrap.textarea-wrap .clear-x { top: 13px; transform: none; }
+.field:hover .clear-x { opacity: 1; }
+.clear-x:hover { background: rgba(192,83,58,0.9); color: #fff; }
+
 .field input, .field select, .field textarea {
   background: rgba(255,250,242,0.52);
   backdrop-filter: blur(10px);
@@ -180,9 +202,11 @@ body {
 }
 .radio-group input, .check-group input { display: none; }
 .radio-group label:has(input:checked), .check-group label:has(input:checked) {
-  border-color: var(--accent);
-  background: rgba(184,149,106,0.18);
-  color: var(--brown) !important;
+  border-color: #6e4826;
+  background: rgba(110,72,38,0.92);
+  color: #fff !important;
+  font-weight: 700 !important;
+  box-shadow: 0 2px 8px rgba(60,30,5,0.25);
 }
 .radio-group label:hover, .check-group label:hover {
   border-color: var(--accent2);
@@ -438,11 +462,12 @@ body {
         </div>
         <div class="field">
           <label>過去の滞納歴 <span class="req">*</span></label>
-          <div class="radio-group">
-            <label><input type="radio" name="arrear" value="なし"> なし</label>
-            <label><input type="radio" name="arrear" value="あり"> あり</label>
-            <label><input type="radio" name="arrear" value="不明"> 不明</label>
-          </div>
+          <select id="f_arrear">
+            <option value="">選択してください</option>
+            <option>なし</option>
+            <option>あり</option>
+            <option>不明</option>
+          </select>
         </div>
       </div>
     </div>
@@ -474,7 +499,7 @@ body {
           <label>築年数（上限）</label>
           <select id="f_age">
             <option value="">こだわらない</option>
-            <option>新築</option><option>築3年以内</option><option>築5年以内</option>
+            <option>新築</option><option>築1年以内</option><option>築3年以内</option><option>築5年以内</option>
             <option>築10年以内</option><option>築15年以内</option><option>築20年以内</option>
             <option>築25年以内</option><option>築30年以内</option>
           </select>
@@ -547,8 +572,8 @@ body {
         <label style="display:flex;align-items:center;justify-content:space-between;">
           <span>追加した駅 <span class="req">*</span><span class="hint">1駅以上追加してください</span></span>
           <button type="button" onclick="clearAllStations()"
-            style="background:none;border:1px solid rgba(192,83,58,0.35);color:var(--red);border-radius:6px;padding:3px 10px;font-size:0.7rem;font-family:'Noto Sans JP',sans-serif;cursor:pointer;transition:all 0.15s;"
-            onmouseover="this.style.background='rgba(192,83,58,0.12)'" onmouseout="this.style.background='none'">全てクリア</button>
+            style="background:#fff;border:1.5px solid #c0533a;color:#c0533a;border-radius:6px;padding:4px 12px;font-size:0.7rem;font-weight:700;font-family:'Noto Sans JP',sans-serif;cursor:pointer;transition:all 0.15s;"
+            onmouseover="this.style.background='#c0533a';this.style.color='#fff'" onmouseout="this.style.background='#fff';this.style.color='#c0533a'">すべてクリア</button>
         </label>
         <div class="station-tags-area" id="station-tags">
           <span class="st-placeholder" id="st-placeholder">まだ駅が追加されていません</span>
@@ -566,7 +591,12 @@ body {
     <div class="section-head"><span class="icon">◆</span><h2>こだわり条件</h2></div>
     <div class="section-body">
       <div class="field" style="margin-bottom:18px">
-        <label>設備・条件（複数選択可）</label>
+        <label style="display:flex;align-items:center;justify-content:space-between;">
+          <span>設備・条件（複数選択可）</span>
+          <button type="button" onclick="clearAmenities()"
+            style="background:#fff;border:1.5px solid #c0533a;color:#c0533a;border-radius:6px;padding:4px 12px;font-size:0.7rem;font-weight:700;font-family:'Noto Sans JP',sans-serif;cursor:pointer;transition:all 0.15s;"
+            onmouseover="this.style.background='#c0533a';this.style.color='#fff'" onmouseout="this.style.background='#fff';this.style.color='#c0533a'">すべてクリア</button>
+        </label>
         <div class="check-group" id="amenities-group">
           <label><input type="checkbox" value="風呂トイレ別"> 風呂トイレ別</label>
           <label><input type="checkbox" value="独立洗面台"> 独立洗面台</label>
@@ -584,15 +614,15 @@ body {
           <label><input type="checkbox" value="デザイナーズ"> デザイナーズ</label>
         </div>
       </div>
-      <div class="field" style="margin-bottom:18px">
-        <label>構造のご希望（複数選択可）</label>
-        <div class="check-group" id="structure-group">
-          <label><input type="checkbox" value="木造"> 木造</label>
-          <label><input type="checkbox" value="軽量鉄骨"> 軽量鉄骨</label>
-          <label><input type="checkbox" value="鉄筋コンクリート（RC）"> RC造</label>
-          <label><input type="checkbox" value="鉄骨鉄筋コンクリート（SRC）"> SRC造</label>
-          <label><input type="checkbox" value="こだわらない（構造）"> こだわらない</label>
-        </div>
+      <div class="field" style="margin-bottom:18px;max-width:340px;">
+        <label>構造のご希望</label>
+        <select id="f_structure">
+          <option value="">こだわらない</option>
+          <option>木造</option>
+          <option>軽量鉄骨</option>
+          <option>鉄筋コンクリート（RC）</option>
+          <option>鉄骨鉄筋コンクリート（SRC）</option>
+        </select>
       </div>
       <div class="form-row single">
         <div class="field">
@@ -605,7 +635,7 @@ body {
 
   <div class="submit-wrap" style="display:flex;gap:14px;justify-content:center;align-items:center;flex-wrap:wrap;">
     <button class="btn-submit" onclick="submitForm()">登録する</button>
-    <button type="button" onclick="resetAll()" style="background:rgba(255,250,242,0.5);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:var(--brown2);border:1px solid rgba(200,170,130,0.5);font-family:'Noto Sans JP',sans-serif;font-size:0.85rem;font-weight:500;letter-spacing:0.08em;padding:16px 36px;border-radius:50px;cursor:pointer;transition:all 0.22s;" onmouseover="this.style.background='rgba(220,200,175,0.7)'" onmouseout="this.style.background='rgba(255,250,242,0.5)'">すべてクリア</button>
+    <button type="button" onclick="resetAll()" style="background:rgba(255,250,242,0.5);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:var(--brown2);border:1px solid rgba(200,170,130,0.5);font-family:'Noto Sans JP',sans-serif;font-size:0.85rem;font-weight:500;letter-spacing:0.08em;padding:16px 36px;border-radius:50px;cursor:pointer;transition:all 0.22s;" onmouseover="this.style.background='rgba(192,83,58,0.92)';this.style.color='#fff';this.style.borderColor='rgba(192,83,58,0.92)'" onmouseout="this.style.background='rgba(255,250,242,0.5)';this.style.color='var(--brown2)';this.style.borderColor='rgba(200,170,130,0.5)'">すべてクリア</button>
   </div>
 </div>
 </div>
@@ -617,7 +647,7 @@ let selectedStations = [];
 function buildRentSelect() {
   const el = document.getElementById('f_rent');
   el.innerHTML = '<option value="">こだわらない</option>';
-  for (let v = 30000; v <= 500000; v += 5000) {
+  for (let v = 30000; v <= 300000; v += 5000) {
     const o = document.createElement('option');
     o.value = v; o.textContent = v.toLocaleString() + ' 円';
     el.appendChild(o);
@@ -635,11 +665,11 @@ function buildInitialSelect() {
 function buildAreaSelect() {
   const el = document.getElementById('f_area');
   el.innerHTML = '<option value="">こだわらない</option>';
-  [15,18,20,22,25,28,30,33,35,40,45,50,55,60,70,80,90,100].forEach(v => {
+  for (let v = 10; v <= 50; v += 1) {
     const o = document.createElement('option');
     o.value = v; o.textContent = v + ' ㎡';
     el.appendChild(o);
-  });
+  }
 }
 
 const AREA_DATA = {
@@ -830,7 +860,7 @@ function submitForm() {
   const email    = document.getElementById('f_email').value.trim();
   const layout   = document.getElementById('f_layout').value;
   const moveinRaw = document.getElementById('f_movein').value;
-  const arrear   = document.querySelector('input[name="arrear"]:checked');
+  const arrear   = document.getElementById('f_arrear').value;
 
   // 未入力チェック
   const missing = [];
@@ -847,11 +877,7 @@ function submitForm() {
   markError('f_email', 'メールアドレス', !email);
   markError('f_movein','入居希望日',     !moveinRaw);
   markError('f_layout','間取り',         !layout);
-  if (!arrear) {
-    missing.push('過去の滞納歴');
-    const f = document.querySelector('input[name="arrear"]').closest('.field');
-    if (f) f.classList.add('error');
-  }
+  markError('f_arrear','過去の滞納歴',   !arrear);
   if (!selectedStations.length) {
     missing.push('希望エリア（駅を1つ以上追加）');
     const tagsField = document.getElementById('station-tags').closest('.field');
@@ -868,7 +894,6 @@ function submitForm() {
 
   const movein   = new Date(moveinRaw).toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' });
   const amenities = [...document.querySelectorAll('#amenities-group input:checked')].map(el => el.value);
-  const structure = [...document.querySelectorAll('#structure-group input:checked')].map(el => el.value);
   const rentVal  = document.getElementById('f_rent').value;
   const initVal  = document.getElementById('f_initial').value;
   const areaVal  = document.getElementById('f_area').value;
@@ -884,10 +909,10 @@ function submitForm() {
     age:       document.getElementById('f_age').value || 'こだわらない',
     walk:      document.getElementById('f_walk').value || 'こだわらない',
     floor:     document.getElementById('f_floor').value || 'こだわらない',
-    structure: structure.join('、') || 'こだわらない',
+    structure: document.getElementById('f_structure').value || 'こだわらない',
     station:   selectedStations.map(s => `${s.station}（${s.line}）`).join('、'),
     workplace: document.getElementById('f_workplace').value.trim() || '—',
-    arrear:    arrear.value,
+    arrear:    arrear,
     amenities: amenities.join('、') || '—',
     notes:     document.getElementById('f_notes').value.trim() || '—',
   };
@@ -924,6 +949,11 @@ function closeValidationModal() {
   document.getElementById('validation-overlay').classList.remove('open');
 }
 
+function clearAmenities() {
+  document.querySelectorAll('#amenities-group input').forEach(c => c.checked = false);
+  showToast('設備・条件をクリアしました');
+}
+
 function resetAll() {
   if (!confirm('入力内容をすべてクリアしますか？')) return;
   clearForm();
@@ -934,13 +964,11 @@ function resetAll() {
 
 function clearForm() {
   ['f_name','f_kana','f_tel','f_email','f_notes','f_workplace'].forEach(id => document.getElementById(id).value = '');
-  ['f_movein','f_layout','f_age','f_walk','f_floor','f_structure','f_pref'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  ['f_movein','f_layout','f_age','f_walk','f_floor','f_structure','f_arrear','f_pref'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
   document.getElementById('f_rent').value = '';
   document.getElementById('f_initial').value = '';
   document.getElementById('f_area').value = '';
-  document.querySelectorAll('input[name="arrear"]').forEach(r => r.checked = false);
   document.querySelectorAll('#amenities-group input').forEach(c => c.checked = false);
-  document.querySelectorAll('#structure-group input').forEach(c => c.checked = false);
   selectedStations = []; renderTags(); onPrefChange();
   document.getElementById('station-checkbox-list').innerHTML = '<span style="color:var(--mid);font-size:0.78rem;font-weight:300;">路線を選択すると表示されます</span>';
 }
@@ -960,15 +988,55 @@ function showToast(msg, warn = false) {
 buildRentSelect(); buildInitialSelect(); buildAreaSelect();
 document.getElementById('f_movein').min = new Date().toISOString().split('T')[0];
 
+// 各入力欄の内側右端に「×」クリアボタンを自動付与
+function clearField(el) {
+  if (!el) return;
+  if (el.tagName === 'SELECT') { el.selectedIndex = 0; }
+  else { el.value = ''; }
+  const f = el.closest('.field'); if (f) f.classList.remove('error');
+}
+document.querySelectorAll('.field').forEach(field => {
+  const input = field.querySelector('input, select, textarea');
+  if (!input) return;
+  // 駅チェックリスト・タグ・こだわりチェック群・num-wrap内は除外
+  if (field.querySelector('.station-list-wrap, .station-tags-area, #amenities-group')) return;
+  if (input.closest('.num-wrap')) return;            // 家賃・初期費用・広さ（単位付き）は別処理
+  if (input.type === 'checkbox' || input.type === 'radio') return;
+
+  // input を input-wrap で包む
+  const wrap = document.createElement('div');
+  wrap.className = 'input-wrap';
+  if (input.tagName === 'TEXTAREA') wrap.classList.add('textarea-wrap');
+  input.parentNode.insertBefore(wrap, input);
+  wrap.appendChild(input);
+
+  const x = document.createElement('button');
+  x.type = 'button'; x.className = 'clear-x'; x.textContent = '✕'; x.title = 'この項目をクリア';
+  x.addEventListener('click', (e) => { e.preventDefault(); clearField(input); });
+  wrap.appendChild(x);
+});
+
+// num-wrap（家賃・初期費用・広さ）はselectの中に×を入れる
+document.querySelectorAll('.num-wrap').forEach(nw => {
+  const sel = nw.querySelector('select');
+  if (!sel) return;
+  const wrap = document.createElement('div');
+  wrap.className = 'input-wrap';
+  wrap.style.flex = '1';
+  sel.parentNode.insertBefore(wrap, sel);
+  wrap.appendChild(sel);
+  const x = document.createElement('button');
+  x.type = 'button'; x.className = 'clear-x'; x.textContent = '✕'; x.title = 'この項目をクリア';
+  x.addEventListener('click', (e) => { e.preventDefault(); clearField(sel); });
+  wrap.appendChild(x);
+});
+
 // 入力したらエラー枠を解除
-['f_name','f_kana','f_tel','f_email','f_movein','f_layout'].forEach(id => {
+['f_name','f_kana','f_tel','f_email','f_movein','f_layout','f_arrear'].forEach(id => {
   const el = document.getElementById(id);
   if (el) el.addEventListener('input', () => { const f = el.closest('.field'); if (f) f.classList.remove('error'); });
   if (el) el.addEventListener('change', () => { const f = el.closest('.field'); if (f) f.classList.remove('error'); });
 });
-document.querySelectorAll('input[name="arrear"]').forEach(r => r.addEventListener('change', () => {
-  const f = r.closest('.field'); if (f) f.classList.remove('error');
-}));
 </script>
 </body>
 </html>
