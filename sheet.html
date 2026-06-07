@@ -264,7 +264,6 @@ tbody td.wrap { white-space: normal; max-width: 170px; font-size: 0.74rem; }
       <input class="search-input" type="text" placeholder="名前・駅名で検索" oninput="applyFilters()">
       <button class="btn btn-export" onclick="exportCSV('all')">CSV 全件</button>
       <button class="btn btn-export" onclick="exportCSV('filtered')" style="background:rgba(140,100,60,0.32);border-color:rgba(180,145,100,0.5);">CSV 表示中</button>
-      <button class="btn btn-clear" onclick="clearAll()">全件削除</button>
     </div>
   </div>
 
@@ -417,7 +416,7 @@ function renderTable(filtered) {
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td class="td-no">#${String(no).padStart(3,'0')}</td>
-      <td class="td-date">${fmtDate(r.date)}</td>
+      <td class="td-date">${fmtDateOnly(r.date)}</td>
       <td><strong>${r.name}</strong><br><span style="font-size:0.7rem;color:var(--mid);font-weight:300;">${r.kana||''}</span></td>
       <td>${fmtDateOnly(r.movein)}</td>
       <td>${r.rent}</td>
@@ -431,7 +430,6 @@ function renderTable(filtered) {
       <td style="white-space:nowrap">
         <button class="btn-copy" id="copy-${r.id}" onclick="copyRecord(${r.id})">コピー</button>
         <button class="btn-detail" onclick="showDetail(${r.id})">詳細</button>
-        <button class="btn-del" onclick="deleteRecord(${r.id})">削除</button>
       </td>`;
     body.appendChild(tr);
   });
@@ -460,7 +458,7 @@ function showDetail(id) {
     <div class="modal-field"><div class="lbl">電話番号</div><div class="val">${r.tel||'—'}</div></div>
     <div class="modal-field"><div class="lbl">メール</div><div class="val">${r.email||'—'}</div></div>
     <div class="modal-divider"></div>
-    <div class="modal-field"><div class="lbl">入居希望日</div><div class="val">${r.movein}</div></div>
+    <div class="modal-field"><div class="lbl">入居希望日</div><div class="val">${fmtDateOnly(r.movein)}</div></div>
     <div class="modal-field"><div class="lbl">滞納歴</div><div class="val">${r.arrear}</div></div>
     <div class="modal-field"><div class="lbl">家賃上限</div><div class="val">${r.rent}</div></div>
     <div class="modal-field"><div class="lbl">初期費用</div><div class="val">${r.initial}</div></div>
@@ -548,7 +546,7 @@ function clearAll() {
 function buildCSVRows(target) {
   const headers = ['No','登録日','名前','ふりがな','電話','メール','入居希望日','家賃上限','初期費用','間取り','広さ','築年数','駅徒歩','階数','構造','希望エリア','職場・よく行くエリア','滞納歴','こだわり','備考'];
   const rows = target.map((r,i) => [
-    i+1, r.date, r.name, r.kana||'—', r.tel||'—', r.email||'—', r.movein,
+    i+1, fmtDateOnly(r.date), r.name, r.kana||'—', r.tel||'—', r.email||'—', fmtDateOnly(r.movein),
     r.rent, r.initial, r.layout, r.area, r.age, r.walk, r.floor||'—', r.structure||'—',
     r.station||'—', r.workplace||'—', r.arrear, r.amenities, r.notes
   ]);
@@ -573,23 +571,38 @@ function copyRecord(id) {
   const text =
 `【賃貸物件希望者】
 〇基本情報
-お名前：${r.name}
-ふりがな：${r.kana||'—'}
-電話番号：${r.tel||'—'}
-メールアドレス：${r.email||'—'}
+お名前：
+${r.name}
+ふりがな：
+${r.kana||'—'}
+電話番号：
+${r.tel||'—'}
+メールアドレス：
+${r.email||'—'}
 
 〇物件について
-入居希望日：${r.movein}
-家賃：${rentFmt}
-初期費用予算：${initFmt}
-築年数：${r.age}
-間取り：${r.layout}
-広さ：${r.area}
-駅徒歩：${r.walk}
-階数：${r.floor||'—'}
-最寄駅：${r.station||'—'}
-職場及びよく行く場所：${r.workplace||'—'}
-過去滞納歴：${r.arrear}
+入居希望日：
+${fmtDateOnly(r.movein)}
+家賃：
+${rentFmt}
+初期費用予算：
+${initFmt}
+築年数：
+${r.age}
+間取り：
+${r.layout}
+広さ：
+${r.area}
+駅徒歩：
+${r.walk}
+階数：
+${r.floor||'—'}
+最寄駅：
+${r.station||'—'}
+職場及びよく行く場所：
+${r.workplace||'—'}
+過去滞納歴：
+${r.arrear}
 こだわり条件：
 ${r.amenities}`;
 
