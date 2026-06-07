@@ -135,7 +135,9 @@ body {
   font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em;
   color: var(--brown2);
 }
-.field label .req { color: var(--accent); margin-left: 3px; }
+.field label .req { color: #d6453a; margin-left: 3px; font-weight: 700; }
+.field.error input, .field.error select { border-color: #d6453a !important; box-shadow: 0 0 0 3px rgba(214,69,58,0.15) !important; }
+.field.error .station-list-wrap, .field.error .station-tags-area { border-color: #d6453a !important; box-shadow: 0 0 0 3px rgba(214,69,58,0.15) !important; }
 .field label .hint { color: var(--mid); font-weight: 300; font-size: 0.68rem; display: block; margin-top: 1px; }
 
 .field input, .field select, .field textarea {
@@ -369,6 +371,19 @@ body {
 
 <div class="toast" id="toast"></div>
 
+<!-- 入力エラーモーダル -->
+<div class="success-overlay" id="validation-overlay">
+  <div class="success-modal">
+    <div class="success-icon" style="color:#d6453a;border-color:rgba(214,69,58,0.5);background:rgba(214,69,58,0.1);">!</div>
+    <h2 style="color:#b03a30;">未入力の項目があります</h2>
+    <div class="accent-line"></div>
+    <p style="margin-bottom:6px;">以下の必須項目をご入力ください。</p>
+    <ul id="validation-list" style="list-style:none;text-align:left;display:inline-block;margin:8px auto 0;"></ul>
+    <br>
+    <button class="btn-success-close" onclick="closeValidationModal()" style="background:rgba(176,58,48,0.85);">入力に戻る</button>
+  </div>
+</div>
+
 <!-- 送信完了モーダル -->
 <div class="success-overlay" id="success-overlay">
   <div class="success-modal">
@@ -588,8 +603,9 @@ body {
     </div>
   </div>
 
-  <div class="submit-wrap">
+  <div class="submit-wrap" style="display:flex;gap:14px;justify-content:center;align-items:center;flex-wrap:wrap;">
     <button class="btn-submit" onclick="submitForm()">登録する</button>
+    <button type="button" onclick="resetAll()" style="background:rgba(255,250,242,0.5);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:var(--brown2);border:1px solid rgba(200,170,130,0.5);font-family:'Noto Sans JP',sans-serif;font-size:0.85rem;font-weight:500;letter-spacing:0.08em;padding:16px 36px;border-radius:50px;cursor:pointer;transition:all 0.22s;" onmouseover="this.style.background='rgba(220,200,175,0.7)'" onmouseout="this.style.background='rgba(255,250,242,0.5)'">すべてクリア</button>
   </div>
 </div>
 </div>
@@ -805,6 +821,9 @@ function renderTags() {
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbzupYxBIqkyplr0dQhFCd4Ml4vvR-gceVw_3W1V-v6vvgW_Fh8pZmoQMCU-owIhBNNmVA/exec';
 
 function submitForm() {
+  // まず既存のエラー表示をクリア
+  document.querySelectorAll('.field.error').forEach(f => f.classList.remove('error'));
+
   const name     = document.getElementById('f_name').value.trim();
   const kana     = document.getElementById('f_kana').value.trim();
   const tel      = document.getElementById('f_tel').value.trim();
@@ -813,8 +832,38 @@ function submitForm() {
   const moveinRaw = document.getElementById('f_movein').value;
   const arrear   = document.querySelector('input[name="arrear"]:checked');
 
-  if (!name || !kana || !tel || !email || !layout || !moveinRaw || !arrear || !selectedStations.length) {
-    showToast('⚠️ 必須項目をすべて入力し、駅を1つ以上追加してください', true); return;
+  // 未入力チェック
+  const missing = [];
+  const markError = (elId, label, cond) => {
+    if (cond) {
+      missing.push(label);
+      const el = document.getElementById(elId);
+      if (el) { const f = el.closest('.field'); if (f) f.classList.add('error'); }
+    }
+  };
+  markError('f_name',  'お名前',         !name);
+  markError('f_kana',  'ふりがな',       !kana);
+  markError('f_tel',   '電話番号',       !tel);
+  markError('f_email', 'メールアドレス', !email);
+  markError('f_movein','入居希望日',     !moveinRaw);
+  markError('f_layout','間取り',         !layout);
+  if (!arrear) {
+    missing.push('過去の滞納歴');
+    const f = document.querySelector('input[name="arrear"]').closest('.field');
+    if (f) f.classList.add('error');
+  }
+  if (!selectedStations.length) {
+    missing.push('希望エリア（駅を1つ以上追加）');
+    const tagsField = document.getElementById('station-tags').closest('.field');
+    if (tagsField) tagsField.classList.add('error');
+  }
+
+  if (missing.length) {
+    showValidationModal(missing);
+    // 最初のエラー項目までスクロール
+    const firstErr = document.querySelector('.field.error');
+    if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
   }
 
   const movein   = new Date(moveinRaw).toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -826,7 +875,8 @@ function submitForm() {
 
   const payload = {
     date:      new Date().toLocaleDateString('ja-JP'),
-    name, kana, tel, email, movein,
+    name, kana, tel, email,
+    movein:    moveinRaw,
     rent:      rentVal ? Number(rentVal).toLocaleString() + '円' : '—',
     initial:   initVal ? Number(initVal).toLocaleString() + '円' : '—',
     layout,
@@ -842,7 +892,6 @@ function submitForm() {
     notes:     document.getElementById('f_notes').value.trim() || '—',
   };
 
-  // 送信ボタンを無効化してローディング表示
   const btn = document.querySelector('.btn-submit');
   btn.disabled = true;
   btn.textContent = '送信中…';
@@ -864,6 +913,23 @@ function submitForm() {
     btn.disabled = false;
     btn.textContent = '登録する';
   });
+}
+
+function showValidationModal(missing) {
+  const list = missing.map(m => `<li style="padding:4px 0;color:#d6453a;font-size:0.85rem;font-weight:500;">・${m}</li>`).join('');
+  document.getElementById('validation-list').innerHTML = list;
+  document.getElementById('validation-overlay').classList.add('open');
+}
+function closeValidationModal() {
+  document.getElementById('validation-overlay').classList.remove('open');
+}
+
+function resetAll() {
+  if (!confirm('入力内容をすべてクリアしますか？')) return;
+  clearForm();
+  document.querySelectorAll('.field.error').forEach(f => f.classList.remove('error'));
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  showToast('入力内容をクリアしました');
 }
 
 function clearForm() {
@@ -893,6 +959,16 @@ function showToast(msg, warn = false) {
 
 buildRentSelect(); buildInitialSelect(); buildAreaSelect();
 document.getElementById('f_movein').min = new Date().toISOString().split('T')[0];
+
+// 入力したらエラー枠を解除
+['f_name','f_kana','f_tel','f_email','f_movein','f_layout'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', () => { const f = el.closest('.field'); if (f) f.classList.remove('error'); });
+  if (el) el.addEventListener('change', () => { const f = el.closest('.field'); if (f) f.classList.remove('error'); });
+});
+document.querySelectorAll('input[name="arrear"]').forEach(r => r.addEventListener('change', () => {
+  const f = r.closest('.field'); if (f) f.classList.remove('error');
+}));
 </script>
 </body>
 </html>
