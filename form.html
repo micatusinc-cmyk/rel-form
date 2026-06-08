@@ -35,10 +35,10 @@ body {
 /* ── BACKGROUND ── */
 .bg-photo {
   position: fixed; inset: 0; z-index: 0;
-  background-image: url('https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&q=80&fit=crop');
+  background-image: url('https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1600&q=80&fit=crop');
   background-size: cover;
   background-position: center;
-  filter: brightness(0.82) saturate(0.85);
+  filter: brightness(0.85) saturate(0.8);
 }
 .bg-overlay {
   position: fixed; inset: 0; z-index: 1;
@@ -138,7 +138,7 @@ body {
 .field label .req { color: #d6453a; margin-left: 3px; font-weight: 700; }
 .field.error input, .field.error select { border-color: #d6453a !important; box-shadow: 0 0 0 3px rgba(214,69,58,0.15) !important; }
 .field.error .station-list-wrap, .field.error .station-tags-area { border-color: #d6453a !important; box-shadow: 0 0 0 3px rgba(214,69,58,0.15) !important; }
-.field label .hint { color: var(--mid); font-weight: 300; font-size: 0.68rem; display: block; margin-top: 1px; }
+.field label .hint { color: var(--brown2); font-weight: 400; font-size: 0.68rem; display: block; margin-top: 1px; }
 
 /* 項目クリア×ボタン（入力欄内・右端） */
 .input-wrap { position: relative; display: block; }
@@ -375,12 +375,23 @@ body {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(184,149,106,0.4); border-radius: 2px; }
 
+/* タイトル切り替え */
+.title-mob { display: none; }
+.title-desk { display: inline; }
+
 @media (max-width: 640px) {
   .form-row, .form-row.triple { grid-template-columns: 1fr; }
   .station-selector { grid-template-columns: 1fr; }
   .app-header { padding: 0 18px; }
   .logo span { display: none; }
   .form-outer { padding: 36px 16px 80px; }
+  /* タイトル改行切り替え */
+  .title-mob { display: inline; }
+  .title-desk { display: none; }
+  /* 入居希望日はみ出し対策 */
+  input[type="date"] { font-size: 0.76rem; min-width: 0; width: 100%; }
+  /* セレクト×ボタン：スマホのネイティブ矢印を避けて右にずらす */
+  .input-wrap:has(> select) .clear-x { right: 36px; }
 }
 </style>
 </head>
@@ -426,7 +437,7 @@ body {
 <div class="page-wrap">
 <div class="form-outer">
   <div class="form-hero">
-    <h1>賃貸サポート<br>物件探しご依頼フォーム</h1>
+    <h1>賃貸サポート<br><span class="title-mob">物件探し<br>ご依頼フォーム</span><span class="title-desk">物件探しご依頼フォーム</span></h1>
     <div class="accent-line"></div>
     <p>ReL Group｜以下の項目をご入力のうえ送信してください。<br>担当者より順次ご連絡いたします。</p>
   </div>
